@@ -15,10 +15,10 @@ export default async function UsersPage() {
     <>
       <header className="bg-white border-b px-8 py-5 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Manage Shops & Admins</h1>
-        <button className="bg-[#00E676] hover:bg-[#00c968] text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
+        <Link href="/users/new" className="bg-[#00E676] hover:bg-[#00c968] text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
           <PlusCircle size={20} />
           Create Shop Login
-        </button>
+        </Link>
       </header>
 
       <div className="p-8">

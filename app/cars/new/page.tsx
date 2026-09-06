@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClient } from '@supabase/supabase-js';
+import { createClient } from '@/lib/supabase/client';
 import { UploadCloud, CheckCircle2, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -17,10 +17,8 @@ export default function AddCarPage() {
     const formData = new FormData(e.currentTarget);
     const file = formData.get('image') as File;
     
-    // We instantiate client-side Supabase for storage upload
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    // Use the proper SSR browser client so it reads the Next.js auth cookie!
+    const supabase = createClient();
 
     try {
       let imageUrl = '';
