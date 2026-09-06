@@ -51,6 +51,7 @@ class _AuthScreenState extends State<AuthScreen> {
       
       if (_isLogin) {
         await supabase.auth.signInWithPassword(email: virtualEmail, password: password);
+        if (mounted) context.go('/');
       } else {
         final authResponse = await supabase.auth.signUp(email: virtualEmail, password: password);
         if (authResponse.user != null) {
@@ -61,9 +62,22 @@ class _AuthScreenState extends State<AuthScreen> {
             'mobile_number': '+91$number'
           });
         }
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('Registration successful! Please login.', style: TextStyle(color: Colors.white)),
+              backgroundColor: Colors.green,
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            )
+          );
+          setState(() {
+            _isLogin = true;
+            _passwordController.clear();
+            _confirmPasswordController.clear();
+          });
+        }
       }
-      
-      if (mounted) context.go('/');
     } catch (e) {
       _showError(e.toString());
     } finally {
