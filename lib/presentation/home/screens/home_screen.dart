@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:selfdrive_cars/presentation/booking/screens/booking_flow_screen.dart';
@@ -223,12 +224,25 @@ class HomeScreen extends ConsumerWidget {
                                           ),
                                         );
                                       } else {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => BookingFlowScreen(car: car),
-                                          ),
-                                        );
+                                        final user = Supabase.instance.client.auth.currentUser;
+                                        if (user == null) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: const Text('Please login or register to book a car.'),
+                                              action: SnackBarAction(
+                                                label: 'Login',
+                                                onPressed: () => GoRouter.of(context).push('/auth'),
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) => BookingFlowScreen(car: car),
+                                            ),
+                                          );
+                                        }
                                       }
                                     },
                                     style: ElevatedButton.styleFrom(

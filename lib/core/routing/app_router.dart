@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
 import '../../presentation/auth/screens/splash_screen.dart';
+import '../../presentation/auth/screens/auth_screen.dart';
 import '../../presentation/home/screens/home_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
