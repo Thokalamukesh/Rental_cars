@@ -89,6 +89,17 @@ export default function AddCarPage() {
                 <option>Hybrid</option>
               </select>
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+              <select name="city" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none bg-white">
+                <option>New York</option>
+                <option>Los Angeles</option>
+                <option>Chicago</option>
+                <option>Houston</option>
+                <option>Miami</option>
+                <option>All Cities</option>
+              </select>
+            </div>
           </div>
 
           <div className="border-t border-gray-100 pt-6">

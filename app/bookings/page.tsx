@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { Search, CheckCircle, XCircle } from 'lucide-react';
 import Link from 'next/link';
+import RealtimeBookings from './RealtimeBookings';
 
 export default async function BookingsPage() {
   const supabase = await createClient();
@@ -17,6 +18,7 @@ export default async function BookingsPage() {
 
   return (
     <>
+      <RealtimeBookings />
       <header className="bg-white border-b px-8 py-5">
         <h1 className="text-2xl font-bold text-gray-800">Booking Requests</h1>
       </header>

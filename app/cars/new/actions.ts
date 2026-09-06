@@ -46,6 +46,7 @@ export async function addCarAction(formData: FormData) {
       transmission: formData.get('transmission'),
       seats: parseInt(formData.get('seats') as string),
       fuel_type: formData.get('fuel_type'),
+      city: formData.get('city') || 'All Cities',
       price_per_day: parseFloat(formData.get('price') as string),
       images: imageUrl ? [imageUrl] : [],
       availability_status: 'AVAILABLE'
