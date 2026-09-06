@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/server';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -10,11 +11,25 @@ export const metadata: Metadata = {
   description: 'Admin dashboard for DriveNow car rental platform',
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // If no user, just render the content (like the Login page) without the sidebar
+  if (!user) {
+    return (
+      <html lang="en">
+        <body className={inter.className}>
+          {children}
+        </body>
+      </html>
+    );
+  }
+
   return (
     <html lang="en">
       <body className={inter.className}>
@@ -35,7 +50,7 @@ export default function RootLayout({
               </Link>
               <Link href="/users" className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 hover:text-white rounded-lg transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" /></svg>
-                Users
+                Manage Shops
               </Link>
               <Link href="/cars" className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/5 hover:text-white rounded-lg transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" /></svg>
@@ -46,6 +61,18 @@ export default function RootLayout({
                 Bookings
               </Link>
             </nav>
+            <div className="p-4 border-t border-white/10">
+              <form action={async () => {
+                'use server';
+                const s = await createClient();
+                await s.auth.signOut();
+              }}>
+                <button className="w-full py-2 text-sm text-gray-400 hover:text-white flex items-center justify-center gap-2 transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" /></svg>
+                  Sign Out
+                </button>
+              </form>
+            </div>
           </aside>
           
           {/* Main Content Area */}
