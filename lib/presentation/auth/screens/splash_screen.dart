@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,7 +16,12 @@ class _SplashScreenState extends State<SplashScreen> {
     // Simulate loading/initialization time
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        context.go('/home'); // Redirect to home for now
+        final session = Supabase.instance.client.auth.currentSession;
+        if (session != null) {
+          context.go('/'); // Logged in, go to Home
+        } else {
+          context.go('/auth'); // Not logged in, go to Auth
+        }
       }
     });
   }
