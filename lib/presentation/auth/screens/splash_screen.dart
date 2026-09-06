@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
       if (mounted) {
         final session = Supabase.instance.client.auth.currentSession;
         if (session != null) {
-          context.go('/'); // Logged in, go to Home
+          context.go('/home'); // Logged in, go to Home
         } else {
           context.go('/auth'); // Not logged in, go to Auth
         }

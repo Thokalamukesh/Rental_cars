@@ -51,7 +51,7 @@ class _AuthScreenState extends State<AuthScreen> {
       
       if (_isLogin) {
         await supabase.auth.signInWithPassword(email: virtualEmail, password: password);
-        if (mounted) context.go('/');
+        if (mounted) context.go('/home');
       } else {
         final authResponse = await supabase.auth.signUp(email: virtualEmail, password: password);
         if (authResponse.user != null) {
