@@ -1,32 +1,20 @@
 # Stage 1: Build the Flutter Web App
-FROM ubuntu:22.04 AS build-env
+FROM ghcr.io/cirruslabs/flutter:stable AS build-env
 
-# Install dependencies required by Flutter
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y curl git wget unzip gdb libstdc++6 libglu1-mesa fonts-droid-fallback lib32stdc++6 python3 xz-utils
-RUN apt-get clean
+# Set the working directory
+WORKDIR /app
 
-# Clone the flutter repo
-RUN git clone https://github.com/flutter/flutter.git /usr/local/flutter
+# Copy the project files
+COPY . .
 
-# Set flutter path
-ENV PATH="/usr/local/flutter/bin:/usr/local/flutter/bin/cache/dart-sdk/bin:${PATH}"
-
-# Run flutter doctor to trigger SDK download
-RUN flutter doctor -v
-
-# Enable flutter web
-RUN flutter channel stable
-RUN flutter upgrade
+# Enable web support
 RUN flutter config --enable-web
 
-# Copy files to container and build
-RUN mkdir /app/
-COPY . /app/
-WORKDIR /app/
+# Get dependencies
 RUN flutter pub get
 
-# Build the web app with CanvasKit renderer for best performance
-RUN flutter build web --web-renderer canvaskit --release
+# Build the web app
+RUN flutter build web --release
 
 # Stage 2: Serve the app with Nginx
 FROM nginx:alpine
