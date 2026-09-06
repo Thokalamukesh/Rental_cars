@@ -5,54 +5,26 @@ import { ArrowLeft, Loader2, Store, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
+import { createShopAdmin } from './actions';
+
 export default function AddUserPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const clientAction = async (formData: FormData) => {
     setLoading(true);
     setErrorMsg('');
-
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get('email') as string;
-    const password = formData.get('password') as string;
-    const shopName = formData.get('shop_name') as string;
     
-    const supabase = createClient();
+    const result = await createShopAdmin(formData);
 
-    try {
-      // 1. Create the user in Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (authError) throw authError;
-
-      const userId = authData.user?.id;
-      if (!userId) throw new Error("Could not create user account");
-
-      // 2. Add the user to our public.users table as a SHOP_ADMIN
-      const { error: dbError } = await supabase.from('users').insert({
-        id: userId,
-        email: email,
-        shop_name: shopName,
-        role: 'SHOP_ADMIN'
-      });
-
-      if (dbError) throw dbError;
-
+    if (result?.error) {
+      setErrorMsg(result.error);
+      setLoading(false);
+    } else {
       setSuccess(true);
       setTimeout(() => router.push('/users'), 2000);
-
-    } catch (err: any) {
-      console.error(err);
-      setErrorMsg(err.message || 'Failed to create shop admin.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -84,7 +56,7 @@ export default function AddUserPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 space-y-6">
+        <form action={clientAction} className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 space-y-6">
           
           <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
             <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
