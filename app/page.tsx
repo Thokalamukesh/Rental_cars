@@ -1,69 +1,87 @@
-import Image from "next/image";
+import Link from 'next/link';
 
-export default function Home() {
+export default function AdminDashboard() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <>
+      <header className="bg-white border-b px-8 py-5">
+        <h1 className="text-2xl font-bold text-gray-800">Overview</h1>
+      </header>
+
+        <div className="p-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <MetricCard title="Total Users" value="1,245" trend="+12%" isPositive={true} />
+            <MetricCard title="Active Cars" value="342" trend="+5%" isPositive={true} />
+            <MetricCard title="Pending Approvals" value="12" trend="-2" isPositive={false} />
+            <MetricCard title="Active Bookings" value="85" trend="+18%" isPositive={true} />
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
+              <h2 className="text-lg font-bold text-gray-800">Recent Bookings</h2>
+              <button className="text-sm text-[#00E676] font-medium hover:underline">View All</button>
+            </div>
+            
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-gray-50/50 text-gray-500 text-sm">
+                  <th className="px-6 py-4 font-medium">Booking ID</th>
+                  <th className="px-6 py-4 font-medium">Customer</th>
+                  <th className="px-6 py-4 font-medium">Car</th>
+                  <th className="px-6 py-4 font-medium">Status</th>
+                  <th className="px-6 py-4 font-medium text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                <tr className="hover:bg-gray-50/50 transition-colors">
+                  <td className="px-6 py-4 font-medium">#BK-8472</td>
+                  <td className="px-6 py-4">Alex Johnson</td>
+                  <td className="px-6 py-4">Tesla Model 3</td>
+                  <td className="px-6 py-4">
+                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">In Trip</span>
+                  </td>
+                  <td className="px-6 py-4 text-right font-medium">$145.00</td>
+                </tr>
+                <tr className="hover:bg-gray-50/50 transition-colors">
+                  <td className="px-6 py-4 font-medium">#BK-8471</td>
+                  <td className="px-6 py-4">Sarah Smith</td>
+                  <td className="px-6 py-4">Hyundai Creta</td>
+                  <td className="px-6 py-4">
+                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">Upcoming</span>
+                  </td>
+                  <td className="px-6 py-4 text-right font-medium">$85.00</td>
+                </tr>
+                <tr className="hover:bg-gray-50/50 transition-colors">
+                  <td className="px-6 py-4 font-medium">#BK-8470</td>
+                  <td className="px-6 py-4">Mike Davis</td>
+                  <td className="px-6 py-4">BMW X5</td>
+                  <td className="px-6 py-4">
+                    <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">Completed</span>
+                  </td>
+                  <td className="px-6 py-4 text-right font-medium">$220.00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </>
+  );
+}
+
+function MetricCard({ title, value, trend, isPositive }: { title: string, value: string, trend: string, isPositive: boolean }) {
+  return (
+    <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col justify-between h-32">
+      <div className="text-gray-500 font-medium text-sm">{title}</div>
+      <div className="flex items-end justify-between">
+        <div className="text-3xl font-bold text-gray-800">{value}</div>
+        <div className={`text-sm font-medium ${isPositive ? 'text-green-500' : 'text-red-500'} flex items-center gap-1`}>
+          {isPositive ? (
+             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" /></svg>
+          )}
+          {trend}
         </div>
-      </main>
+      </div>
     </div>
   );
 }
