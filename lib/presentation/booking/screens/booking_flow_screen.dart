@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -21,7 +22,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
   double _totalPrice = 0.0;
   
   // KYC Details
-  File? _licenseImage;
+  XFile? _licenseImage;
   bool _isUploading = false;
   
   final supabase = Supabase.instance.client;
@@ -72,7 +73,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
     
     if (pickedFile != null) {
       setState(() {
-        _licenseImage = File(pickedFile.path);
+        _licenseImage = pickedFile;
       });
     }
   }
@@ -91,8 +92,8 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
       // 1. Upload KYC Image
       final fileExt = _licenseImage!.path.split('.').last;
       final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
-      
-      await supabase.storage.from('kyc').upload(fileName, _licenseImage!);
+      final bytes = await _licenseImage!.readAsBytes();
+      await supabase.storage.from('kyc').uploadBinary(fileName, bytes);
       final imageUrl = supabase.storage.from('kyc').getPublicUrl(fileName);
 
       // 2. Save KYC Document
@@ -357,7 +358,9 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                     child: _licenseImage != null
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: Image.file(_licenseImage!, fit: BoxFit.cover),
+                          child: kIsWeb 
+                            ? Image.network(_licenseImage!.path, fit: BoxFit.cover) 
+                            : Image.file(File(_licenseImage!.path), fit: BoxFit.cover),
                         )
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.center,

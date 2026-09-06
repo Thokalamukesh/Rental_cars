@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../../presentation/auth/screens/splash_screen.dart';
 import '../../presentation/auth/screens/auth_screen.dart';
 import '../../presentation/home/screens/home_screen.dart';
+import '../../presentation/booking/screens/my_bookings_screen.dart';
+import '../../presentation/profile/screens/profile_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
@@ -16,8 +18,8 @@ final goRouter = GoRouter(
       builder: (context, state) => const SplashScreen(),
     ),
     GoRoute(
-      path: '/login',
-      builder: (context, state) => const PlaceholderScreen(title: 'Login'),
+      path: '/auth',
+      builder: (context, state) => const AuthScreen(),
     ),
     ShellRoute(
       navigatorKey: _shellNavigatorKey,
@@ -35,15 +37,15 @@ final goRouter = GoRouter(
         ),
         GoRoute(
           path: '/bookings',
-          builder: (context, state) => const PlaceholderScreen(title: 'My Bookings'),
+          builder: (context, state) => const MyBookingsScreen(),
         ),
         GoRoute(
           path: '/host',
-          builder: (context, state) => const PlaceholderScreen(title: 'Host Dashboard'),
+          builder: (context, state) => const ProfileScreen(), // Redirecting host tab to Profile/Settings
         ),
         GoRoute(
           path: '/profile',
-          builder: (context, state) => const PlaceholderScreen(title: 'Profile'),
+          builder: (context, state) => const ProfileScreen(),
         ),
       ],
     ),
@@ -64,6 +66,7 @@ class ScaffoldWithBottomNavBar extends StatelessWidget {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _calculateSelectedIndex(context),
         onTap: (int idx) => _onItemTapped(idx, context),
+        type: BottomNavigationBarType.fixed,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home_outlined), activeIcon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.explore_outlined), activeIcon: Icon(Icons.explore), label: 'Explore'),
