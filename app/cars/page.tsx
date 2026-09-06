@@ -5,10 +5,25 @@ import Link from 'next/link';
 export default async function CarsPage() {
   const supabase = await createClient();
   
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data: dbUser } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+    
+  const role = dbUser?.role || 'SUPER_ADMIN';
+
   // Fetch cars from Supabase
-  const { data: cars, error } = await supabase
-    .from('cars')
-    .select('*, users(shop_name)');
+  let query = supabase.from('cars').select('*, users(shop_name)');
+  
+  if (role === 'SHOP_ADMIN') {
+    query = query.eq('shop_id', user.id);
+  }
+  
+  const { data: cars, error } = await query.order('created_at', { ascending: false });
 
   return (
     <>

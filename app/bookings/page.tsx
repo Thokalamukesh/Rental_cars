@@ -6,15 +6,31 @@ import RealtimeBookings from './RealtimeBookings';
 export default async function BookingsPage() {
   const supabase = await createClient();
   
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return null;
+
+  const { data: dbUser } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+    
+  const role = dbUser?.role || 'SUPER_ADMIN';
+
   // Fetch bookings with car and customer details
-  const { data: bookings } = await supabase
+  let query = supabase
     .from('bookings')
     .select(`
       *,
       cars(brand, model, price_per_day),
       customer:users!bookings_customer_id_fkey(email)
-    `)
-    .order('created_at', { ascending: false });
+    `);
+    
+  if (role === 'SHOP_ADMIN') {
+    query = query.eq('shop_id', user.id);
+  }
+    
+  const { data: bookings } = await query.order('created_at', { ascending: false });
 
   return (
     <>
