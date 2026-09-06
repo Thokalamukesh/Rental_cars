@@ -5,65 +5,23 @@ import { createClient } from '@/lib/supabase/client';
 import { UploadCloud, CheckCircle2, ArrowLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
+import { addCarAction } from './actions';
+
 export default function AddCarPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const clientAction = async (formData: FormData) => {
     setLoading(true);
-
-    const formData = new FormData(e.currentTarget);
-    const file = formData.get('image') as File;
+    const result = await addCarAction(formData);
     
-    // Use the proper SSR browser client so it reads the Next.js auth cookie!
-    const supabase = createClient();
-
-    try {
-      let imageUrl = '';
-      if (file && file.size > 0) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('cars')
-          .upload(fileName, file);
-
-        if (uploadError) throw uploadError;
-        
-        const { data: { publicUrl } } = supabase.storage.from('cars').getPublicUrl(fileName);
-        imageUrl = publicUrl;
-      }
-
-      // Add to database
-      const { data: userData } = await supabase.auth.getUser();
-      const shopId = userData?.user?.id;
-
-      if (!shopId) throw new Error("Not authenticated");
-
-      const { error: insertError } = await supabase.from('cars').insert({
-        shop_id: shopId,
-        brand: formData.get('brand'),
-        model: formData.get('model'),
-        year: parseInt(formData.get('year') as string),
-        transmission: formData.get('transmission'),
-        seats: parseInt(formData.get('seats') as string),
-        fuel_type: formData.get('fuel_type'),
-        price_per_day: parseFloat(formData.get('price') as string),
-        images: imageUrl ? [imageUrl] : [],
-        availability_status: 'AVAILABLE'
-      });
-
-      if (insertError) throw insertError;
-
+    if (result?.error) {
+      alert(result.error);
+      setLoading(false);
+    } else {
       setSuccess(true);
       setTimeout(() => router.push('/cars'), 2000);
-
-    } catch (err) {
-      alert("Failed to add car. Ensure you are logged in and Storage is configured.");
-      console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -89,7 +47,7 @@ export default function AddCarPage() {
       </header>
 
       <div className="p-8 max-w-3xl mx-auto">
-        <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 space-y-6">
+        <form action={clientAction} className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
