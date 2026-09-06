@@ -3,8 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // Brand colors
-  static const Color primaryColor = Color(0xFF00E676); // Electric Green
-  static const Color primaryDarkColor = Color(0xFF00C853);
+  static const Color primaryColor = Color(0xFF4F46E5); // Indigo 600
+  static const Color primaryDarkColor = Color(0xFF4338CA); // Indigo 700
   static const Color secondaryColor = Color(0xFF1F1F29); // Dark surface
   static const Color backgroundColor = Color(
     0xFFF5F6FA,
