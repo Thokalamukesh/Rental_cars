@@ -85,7 +85,7 @@ export default async function UsersPage() {
                         {new Date(user.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <button className="text-sm text-blue-600 font-medium hover:underline">Edit</button>
+                        <Link href={`/users/${user.id}`} className="text-sm text-indigo-600 font-medium hover:underline">View Details</Link>
                       </td>
                     </tr>
                   ))
