@@ -3,6 +3,8 @@ import { Search, CheckCircle, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import RealtimeBookings from './RealtimeBookings';
 
+export const dynamic = 'force-dynamic';
+
 export default async function BookingsPage() {
   const supabase = await createClient();
   
@@ -23,7 +25,7 @@ export default async function BookingsPage() {
     .select(`
       *,
       cars(brand, model, price_per_day),
-      customer:users!bookings_customer_id_fkey(email)
+      customer:users!bookings_customer_id_fkey(email, shop_name, mobile_number)
     `);
     
   if (role === 'SHOP_ADMIN') {
@@ -72,9 +74,12 @@ export default async function BookingsPage() {
                         {booking.cars?.brand} {booking.cars?.model}
                       </td>
                       <td className="px-6 py-4 text-gray-600">
-                        <Link href={`/users/${booking.customer_id}`} className="text-indigo-600 hover:underline">
-                          {booking.customer?.email}
-                        </Link>
+                        <div className="font-medium text-gray-900">
+                          {booking.customer?.shop_name || 'No Name'}
+                        </div>
+                        <div className="text-sm">
+                          {booking.customer?.mobile_number || booking.customer?.email.replace('@drivenow.app', '')}
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-sm text-gray-600">
                         {new Date(booking.start_date).toLocaleDateString()} <br/>
