@@ -91,9 +91,19 @@ export default async function CarsPage() {
                           <button className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
                             <Edit size={18} />
                           </button>
-                          <button className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors">
-                            <Trash2 size={18} />
-                          </button>
+                          <form action={async () => {
+                            'use server';
+                            const sb = await createClient();
+                            await sb.from('cars').delete().eq('id', car.id);
+                            
+                            // Revalidate path using dynamic import to avoid module issues if not at top level
+                            const { revalidatePath } = await import('next/cache');
+                            revalidatePath('/cars');
+                          }}>
+                            <button title="Delete" className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors">
+                              <Trash2 size={18} />
+                            </button>
+                          </form>
                         </div>
                       </td>
                     </tr>
