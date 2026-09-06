@@ -1,30 +1,81 @@
+import { createClient } from '@/lib/supabase/server';
 import Link from 'next/link';
+import { CheckCircle, Clock } from 'lucide-react';
 
-export default function AdminDashboard() {
+export default async function AdminDashboard() {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  // Fetch the user's role
+  const { data: dbUser } = await supabase
+    .from('users')
+    .select('role')
+    .eq('id', user.id)
+    .single();
+  
+  const role = dbUser?.role || 'SUPER_ADMIN';
+
+  // 1. Fetch Cars
+  let carsQuery = supabase.from('cars').select('id', { count: 'exact', head: true });
+  if (role === 'SHOP_ADMIN') {
+    carsQuery = carsQuery.eq('shop_id', user.id);
+  }
+  const { count: carsCount } = await carsQuery;
+
+  // 2. Fetch Users (Only relevant for Super Admin)
+  let usersCount = 0;
+  if (role === 'SUPER_ADMIN') {
+    const { count } = await supabase.from('users').select('id', { count: 'exact', head: true });
+    usersCount = count || 0;
+  }
+
+  // 3. Fetch Bookings (Pending & Active)
+  let bookingsQuery = supabase.from('bookings').select('id, status', { count: 'exact' });
+  let recentBookingsQuery = supabase
+    .from('bookings')
+    .select('*, cars(brand, model), customer:users!bookings_customer_id_fkey(email)')
+    .order('created_at', { ascending: false })
+    .limit(5);
+
+  if (role === 'SHOP_ADMIN') {
+    bookingsQuery = bookingsQuery.eq('shop_id', user.id);
+    recentBookingsQuery = recentBookingsQuery.eq('shop_id', user.id);
+  }
+
+  const { data: allBookings } = await bookingsQuery;
+  const pendingCount = allBookings?.filter(b => b.status === 'PENDING').length || 0;
+  const activeCount = allBookings?.filter(b => b.status === 'APPROVED' || b.status === 'IN_PROGRESS').length || 0;
+
+  const { data: recentBookings } = await recentBookingsQuery;
+
   return (
     <>
       <header className="bg-white border-b px-8 py-5">
         <h1 className="text-2xl font-bold text-gray-800">Overview</h1>
       </header>
 
-        <div className="p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <MetricCard title="Total Users" value="1,245" trend="+12%" isPositive={true} />
-            <MetricCard title="Active Cars" value="342" trend="+5%" isPositive={true} />
-            <MetricCard title="Pending Approvals" value="12" trend="-2" isPositive={false} />
-            <MetricCard title="Active Bookings" value="85" trend="+18%" isPositive={true} />
-          </div>
+      <div className="p-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {role === 'SUPER_ADMIN' && (
+            <MetricCard title="Total Users" value={usersCount.toString()} trend="Live" isPositive={true} />
+          )}
+          <MetricCard title="Active Cars" value={(carsCount || 0).toString()} trend="Live" isPositive={true} />
+          <MetricCard title="Pending Approvals" value={pendingCount.toString()} trend="Needs Action" isPositive={pendingCount === 0} />
+          <MetricCard title="Active Bookings" value={activeCount.toString()} trend="In Progress" isPositive={true} />
+        </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
-              <h2 className="text-lg font-bold text-gray-800">Recent Bookings</h2>
-              <button className="text-sm text-[#00E676] font-medium hover:underline">View All</button>
-            </div>
-            
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <div className="px-6 py-5 border-b border-gray-100 flex justify-between items-center">
+            <h2 className="text-lg font-bold text-gray-800">Recent Bookings</h2>
+            <Link href="/bookings" className="text-sm text-indigo-600 font-medium hover:underline">View All</Link>
+          </div>
+          
+          <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50/50 text-gray-500 text-sm">
-                  <th className="px-6 py-4 font-medium">Booking ID</th>
                   <th className="px-6 py-4 font-medium">Customer</th>
                   <th className="px-6 py-4 font-medium">Car</th>
                   <th className="px-6 py-4 font-medium">Status</th>
@@ -32,38 +83,37 @@ export default function AdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                <tr className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4 font-medium">#BK-8472</td>
-                  <td className="px-6 py-4">Alex Johnson</td>
-                  <td className="px-6 py-4">Tesla Model 3</td>
-                  <td className="px-6 py-4">
-                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">In Trip</span>
-                  </td>
-                  <td className="px-6 py-4 text-right font-medium">$145.00</td>
-                </tr>
-                <tr className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4 font-medium">#BK-8471</td>
-                  <td className="px-6 py-4">Sarah Smith</td>
-                  <td className="px-6 py-4">Hyundai Creta</td>
-                  <td className="px-6 py-4">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">Upcoming</span>
-                  </td>
-                  <td className="px-6 py-4 text-right font-medium">$85.00</td>
-                </tr>
-                <tr className="hover:bg-gray-50/50 transition-colors">
-                  <td className="px-6 py-4 font-medium">#BK-8470</td>
-                  <td className="px-6 py-4">Mike Davis</td>
-                  <td className="px-6 py-4">BMW X5</td>
-                  <td className="px-6 py-4">
-                    <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">Completed</span>
-                  </td>
-                  <td className="px-6 py-4 text-right font-medium">$220.00</td>
-                </tr>
+                {recentBookings && recentBookings.length > 0 ? (
+                  recentBookings.map((booking) => (
+                    <tr key={booking.id} className="hover:bg-gray-50/50 transition-colors">
+                      <td className="px-6 py-4 text-gray-800 font-medium">{booking.customer?.email}</td>
+                      <td className="px-6 py-4 text-gray-600">{booking.cars?.brand} {booking.cars?.model}</td>
+                      <td className="px-6 py-4">
+                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${
+                          booking.status === 'APPROVED' ? 'bg-green-100 text-green-700' :
+                          booking.status === 'REJECTED' ? 'bg-red-100 text-red-700' :
+                          booking.status === 'COMPLETED' ? 'bg-gray-100 text-gray-700' :
+                          'bg-yellow-100 text-yellow-700'
+                        }`}>
+                          {booking.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 text-right font-bold text-gray-800">${booking.total_price}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                      No recent bookings found.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
         </div>
-      </>
+      </div>
+    </>
   );
 }
 
