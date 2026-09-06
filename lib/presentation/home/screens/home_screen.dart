@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:selfdrive_cars/presentation/booking/screens/booking_flow_screen.dart';
 
 // Available Cities
 const List<String> availableCities = ['All Cities', 'New York', 'Los Angeles', 'Chicago', 'Houston', 'Miami'];
@@ -214,7 +215,12 @@ class HomeScreen extends ConsumerWidget {
                                           ),
                                         );
                                       } else {
-                                        // TODO: Navigate to Booking Flow
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => BookingFlowScreen(car: car),
+                                          ),
+                                        );
                                       }
                                     },
                                     style: ElevatedButton.styleFrom(
