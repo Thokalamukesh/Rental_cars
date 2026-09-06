@@ -6,8 +6,17 @@ import 'package:selfdrive_cars/presentation/booking/screens/booking_flow_screen.
 // Available Cities
 const List<String> availableCities = ['All Cities', 'New York', 'Los Angeles', 'Chicago', 'Houston', 'Miami'];
 
-// Provider for selected city
-final selectedCityProvider = StateProvider<String>((ref) => 'All Cities');
+// Notifier for selected city
+class CityNotifier extends Notifier<String> {
+  @override
+  String build() => 'All Cities';
+
+  void setCity(String city) {
+    state = city;
+  }
+}
+
+final selectedCityProvider = NotifierProvider<CityNotifier, String>(CityNotifier.new);
 
 // Provider to fetch live cars from Supabase
 final carsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
@@ -16,15 +25,14 @@ final carsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   
   var query = supabase
       .from('cars')
-      .select('*, users(shop_name)')
-      .order('created_at', ascending: false);
+      .select('*, users(shop_name)');
       
   // Filter by city if it's not 'All Cities'
   if (selectedCity != 'All Cities') {
     query = query.eq('city', selectedCity);
   }
       
-  final response = await query;
+  final response = await query.order('created_at', ascending: false);
   return List<Map<String, dynamic>>.from(response);
 });
 
@@ -54,7 +62,7 @@ class HomeScreen extends ConsumerWidget {
                 style: const TextStyle(color: Color(0xFF4F46E5), fontWeight: FontWeight.bold),
                 onChanged: (String? newValue) {
                   if (newValue != null) {
-                    ref.read(selectedCityProvider.notifier).state = newValue;
+                    ref.read(selectedCityProvider.notifier).setCity(newValue);
                   }
                 },
                 items: availableCities.map<DropdownMenuItem<String>>((String value) {
