@@ -54,16 +54,18 @@ class _AuthScreenState extends State<AuthScreen> {
       } else {
         final authResponse = await supabase.auth.signUp(email: virtualEmail, password: password);
         if (authResponse.user != null) {
-          await supabase.from('users').update({
+          await supabase.from('users').upsert({
+            'id': authResponse.user!.id,
+            'email': virtualEmail,
             'shop_name': _nameController.text.trim(),
             'mobile_number': '+91$number'
-          }).eq('id', authResponse.user!.id);
+          });
         }
       }
       
       if (mounted) context.go('/');
     } catch (e) {
-      _showError('Invalid credentials. Please try again.');
+      _showError(e.toString());
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
