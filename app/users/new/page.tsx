@@ -32,7 +32,7 @@ export default function AddUserPage() {
     return (
       <div className="flex h-full items-center justify-center p-8">
         <div className="text-center bg-white p-12 rounded-2xl shadow-sm border border-gray-100 max-w-sm w-full">
-          <CheckCircle2 size={64} className="text-[#00E676] mx-auto mb-4" />
+          <CheckCircle2 size={64} className="text-indigo-600 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-800">Shop Admin Created!</h2>
           <p className="text-gray-500 mt-2">Redirecting to users list...</p>
         </div>
@@ -71,24 +71,24 @@ export default function AddUserPage() {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Shop Name</label>
-              <input name="shop_name" required placeholder="e.g. City Rentals" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#00E676] outline-none" />
+              <input name="shop_name" required placeholder="e.g. City Rentals" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none" />
             </div>
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Login Email</label>
-              <input name="email" type="email" required placeholder="shop@example.com" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#00E676] outline-none" />
+              <input name="email" type="email" required placeholder="shop@example.com" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none" />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Temporary Password</label>
-              <input name="password" type="password" required placeholder="Minimum 6 characters" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#00E676] outline-none" />
+              <input name="password" type="password" required placeholder="Minimum 6 characters" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none" />
             </div>
           </div>
 
           <div className="flex justify-end pt-6 mt-6 border-t border-gray-100">
             <button 
               disabled={loading}
-              className="bg-[#00E676] hover:bg-[#00c968] text-white px-8 py-3 rounded-lg font-bold flex items-center justify-center min-w-[180px] transition-colors disabled:opacity-70"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-bold flex items-center justify-center min-w-[180px] transition-colors disabled:opacity-70 shadow-lg shadow-indigo-600/30"
             >
               {loading ? <Loader2 className="animate-spin" size={20} /> : 'Create Account'}
             </button>

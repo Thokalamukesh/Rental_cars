@@ -37,7 +37,7 @@ export default async function RootLayout({
           {/* Sidebar */}
           <aside className="w-64 bg-[#1E1E24] text-white flex flex-col shrink-0">
             <div className="p-6 flex items-center gap-3">
-              <div className="w-8 h-8 bg-[#00E676] rounded flex items-center justify-center font-bold text-white shadow-lg shadow-[#00E676]/30">
+              <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded flex items-center justify-center font-bold text-white shadow-lg shadow-indigo-500/30">
                 D
               </div>
               <span className="text-xl font-bold">DriveNow Admin</span>

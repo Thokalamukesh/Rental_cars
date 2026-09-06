@@ -15,7 +15,7 @@ export default async function UsersPage() {
     <>
       <header className="bg-white border-b px-8 py-5 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Manage Shops & Admins</h1>
-        <Link href="/users/new" className="bg-[#00E676] hover:bg-[#00c968] text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
+        <Link href="/users/new" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors shadow-lg shadow-indigo-600/30">
           <PlusCircle size={20} />
           Create Shop Login
         </Link>
@@ -29,11 +29,11 @@ export default async function UsersPage() {
               <input 
                 type="text" 
                 placeholder="Search shops by name or email..." 
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00E676] outline-none"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 outline-none"
               />
             </div>
             <div className="flex gap-2">
-              <select className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00E676]">
+              <select className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600">
                 <option>All Roles</option>
                 <option>Super Admin</option>
                 <option>Shop Admin</option>

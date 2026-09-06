@@ -29,7 +29,7 @@ export default function AddCarPage() {
     return (
       <div className="flex h-full items-center justify-center p-8">
         <div className="text-center bg-white p-12 rounded-2xl shadow-sm border border-gray-100 max-w-sm w-full">
-          <CheckCircle2 size={64} className="text-[#00E676] mx-auto mb-4" />
+          <CheckCircle2 size={64} className="text-indigo-600 mx-auto mb-4" />
           <h2 className="text-2xl font-bold text-gray-800">Car Added!</h2>
           <p className="text-gray-500 mt-2">Redirecting to fleet...</p>
         </div>
@@ -51,30 +51,30 @@ export default function AddCarPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
-              <input name="brand" required placeholder="e.g. Hyundai" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#00E676] outline-none" />
+              <input name="brand" required placeholder="e.g. Hyundai" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Model</label>
-              <input name="model" required placeholder="e.g. Creta" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#00E676] outline-none" />
+              <input name="model" required placeholder="e.g. Creta" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Year</label>
-              <input name="year" type="number" required placeholder="2023" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#00E676] outline-none" />
+              <input name="year" type="number" required placeholder="2023" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Price Per Day ($)</label>
-              <input name="price" type="number" step="0.01" required placeholder="85.00" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#00E676] outline-none" />
+              <input name="price" type="number" step="0.01" required placeholder="85.00" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Transmission</label>
-              <select name="transmission" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#00E676] outline-none bg-white">
+              <select name="transmission" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none bg-white">
                 <option>Automatic</option>
                 <option>Manual</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Seats</label>
-              <select name="seats" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#00E676] outline-none bg-white">
+              <select name="seats" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none bg-white">
                 <option>5</option>
                 <option>7</option>
                 <option>2</option>
@@ -82,7 +82,7 @@ export default function AddCarPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Fuel Type</label>
-              <select name="fuel_type" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#00E676] outline-none bg-white">
+              <select name="fuel_type" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none bg-white">
                 <option>Petrol</option>
                 <option>Diesel</option>
                 <option>Electric</option>
@@ -104,7 +104,7 @@ export default function AddCarPage() {
           <div className="flex justify-end pt-4">
             <button 
               disabled={loading}
-              className="bg-[#00E676] hover:bg-[#00c968] text-white px-8 py-3 rounded-lg font-bold flex items-center justify-center min-w-[150px] transition-colors disabled:opacity-70"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-lg font-bold flex items-center justify-center min-w-[150px] transition-colors disabled:opacity-70 shadow-lg shadow-indigo-600/30"
             >
               {loading ? <Loader2 className="animate-spin" size={20} /> : 'Save Car to Fleet'}
             </button>

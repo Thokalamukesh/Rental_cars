@@ -14,7 +14,7 @@ export default async function CarsPage() {
     <>
       <header className="bg-white border-b px-8 py-5 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Fleet Management</h1>
-        <Link href="/cars/new" className="bg-[#00E676] hover:bg-[#00c968] text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
+        <Link href="/cars/new" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors shadow-lg shadow-indigo-600/30">
           <PlusCircle size={20} />
           Add New Car
         </Link>
@@ -28,11 +28,11 @@ export default async function CarsPage() {
               <input 
                 type="text" 
                 placeholder="Search cars by model or brand..." 
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00E676] outline-none"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 outline-none"
               />
             </div>
             <div className="flex gap-2">
-              <select className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#00E676]">
+              <select className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600">
                 <option>All Statuses</option>
                 <option>Available</option>
                 <option>Rented</option>
@@ -59,10 +59,10 @@ export default async function CarsPage() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-4">
                           <div className="w-16 h-12 bg-gray-200 rounded object-cover flex items-center justify-center overflow-hidden">
-                            {car.images && car.images.length > 0 ? (
+                            {Array.isArray(car.images) && car.images.length > 0 && typeof car.images[0] === 'string' && car.images[0].startsWith('http') ? (
                               <img src={car.images[0]} alt={car.model} className="w-full h-full object-cover" />
                             ) : (
-                              <span className="text-gray-400 text-xs">No Image</span>
+                              <span className="text-gray-400 text-xs text-center px-1">No Image</span>
                             )}
                           </div>
                           <div>
