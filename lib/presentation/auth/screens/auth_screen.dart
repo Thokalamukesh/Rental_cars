@@ -9,9 +9,11 @@ class AuthScreen extends StatefulWidget {
   State<AuthScreen> createState() => _AuthScreenState();
 }
 
-class _AuthScreenState extends State<AuthScreen> {
-  bool _isLogin = true;
+class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
   bool _isLoading = false;
+  bool _obscurePassword = true;
+  bool _obscureConfirmPassword = true;
   
   final _nameController = TextEditingController();
   final _numberController = TextEditingController();
@@ -20,7 +22,24 @@ class _AuthScreenState extends State<AuthScreen> {
   
   final supabase = Supabase.instance.client;
 
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _nameController.dispose();
+    _numberController.dispose();
+    _passwordController.dispose();
+    _confirmPasswordController.dispose();
+    super.dispose();
+  }
+
   Future<void> _submit() async {
+    final isLogin = _tabController.index == 0;
     final number = _numberController.text.trim();
     final password = _passwordController.text.trim();
     
@@ -29,7 +48,12 @@ class _AuthScreenState extends State<AuthScreen> {
       return;
     }
 
-    if (!_isLogin) {
+    if (number.length != 10 || !RegExp(r'^[0-9]+$').hasMatch(number)) {
+      _showError('Please enter a valid 10-digit mobile number');
+      return;
+    }
+
+    if (!isLogin) {
       final name = _nameController.text.trim();
       final confirmPassword = _confirmPasswordController.text.trim();
       
@@ -41,6 +65,10 @@ class _AuthScreenState extends State<AuthScreen> {
         _showError('Passwords do not match');
         return;
       }
+      if (password.length < 6) {
+        _showError('Password must be at least 6 characters');
+        return;
+      }
     }
 
     setState(() => _isLoading = true);
@@ -49,7 +77,7 @@ class _AuthScreenState extends State<AuthScreen> {
       // Use virtual email for phone auth
       final virtualEmail = '$number@drivenow.app';
       
-      if (_isLogin) {
+      if (isLogin) {
         await supabase.auth.signInWithPassword(email: virtualEmail, password: password);
         if (mounted) context.go('/home');
       } else {
@@ -58,10 +86,11 @@ class _AuthScreenState extends State<AuthScreen> {
           await supabase.from('users').upsert({
             'id': authResponse.user!.id,
             'email': virtualEmail,
-            'shop_name': _nameController.text.trim(),
+            'full_name': _nameController.text.trim(),
             'mobile_number': '+91$number'
           });
         }
+        
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -71,11 +100,10 @@ class _AuthScreenState extends State<AuthScreen> {
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             )
           );
-          setState(() {
-            _isLogin = true;
-            _passwordController.clear();
-            _confirmPasswordController.clear();
-          });
+          // Switch to Login Tab automatically and pre-fill number
+          _tabController.animateTo(0);
+          _passwordController.clear();
+          _confirmPasswordController.clear();
         }
       }
     } catch (e) {
@@ -101,139 +129,133 @@ class _AuthScreenState extends State<AuthScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 32.0, vertical: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                // Logo or Icon
-                const Icon(
-                  Icons.directions_car,
-                  size: 80,
-                  color: Color(0xFF4F46E5), // Indigo
+        child: Column(
+          children: [
+            const SizedBox(height: 40),
+            const Icon(Icons.directions_car, size: 80, color: Color(0xFF4F46E5)),
+            const SizedBox(height: 16),
+            const Text(
+              'DriveNow',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Color(0xFF1E1E24)),
+            ),
+            const SizedBox(height: 32),
+            
+            // TabBar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32.0),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(height: 24),
-                
-                // Welcome Text
-                Text(
-                  _isLogin ? 'Welcome Back!' : 'Create Account',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF1E1E24),
+                child: TabBar(
+                  controller: _tabController,
+                  indicator: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 4, spreadRadius: 1)],
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  _isLogin ? 'Login to continue booking cars.' : 'Join us to start your journey.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 40),
-                
-                // Input Fields
-                if (!_isLogin) ...[
-                  _buildTextField(
-                    controller: _nameController,
-                    label: 'Full Name',
-                    icon: Icons.person_outline,
-                  ),
-                  const SizedBox(height: 16),
-                ],
-                
-                _buildTextField(
-                  controller: _numberController,
-                  label: 'Mobile Number',
-                  icon: Icons.phone_android,
-                  keyboardType: TextInputType.phone,
-                  prefixText: '+91  ',
-                ),
-                const SizedBox(height: 16),
-                
-                _buildTextField(
-                  controller: _passwordController,
-                  label: 'Password',
-                  icon: Icons.lock_outline,
-                  obscureText: true,
-                ),
-                
-                if (!_isLogin) ...[
-                  const SizedBox(height: 16),
-                  _buildTextField(
-                    controller: _confirmPasswordController,
-                    label: 'Confirm Password',
-                    icon: Icons.lock_outline,
-                    obscureText: true,
-                  ),
-                ],
-                
-                const SizedBox(height: 32),
-                
-                // Submit Button
-                ElevatedButton(
-                  onPressed: _isLoading ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF4F46E5), // Indigo Primary
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 18),
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: _isLoading 
-                      ? const SizedBox(
-                          height: 24,
-                          width: 24,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
-                        )
-                      : Text(
-                          _isLogin ? 'Login' : 'Register', 
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)
-                        ),
-                ),
-                
-                const SizedBox(height: 24),
-                
-                // Toggle Login / Register
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      _isLogin ? "Don't have an account? " : "Already have an account? ",
-                      style: TextStyle(color: Colors.grey[700], fontSize: 15),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _isLogin = !_isLogin;
-                          // Clear fields when switching
-                          _nameController.clear();
-                          _passwordController.clear();
-                          _confirmPasswordController.clear();
-                        });
-                      },
-                      child: Text(
-                        _isLogin ? 'Register' : 'Login',
-                        style: const TextStyle(
-                          color: Color(0xFF4F46E5),
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
-                    ),
+                  labelColor: const Color(0xFF4F46E5),
+                  unselectedLabelColor: Colors.grey[600],
+                  labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  dividerColor: Colors.transparent,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  tabs: const [
+                    Tab(text: 'Login'),
+                    Tab(text: 'Register'),
                   ],
                 ),
-              ],
+              ),
+            ),
+            
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildForm(isLogin: true),
+                  _buildForm(isLogin: false),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildForm({required bool isLogin}) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(32.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          if (!isLogin) ...[
+            _buildTextField(
+              controller: _nameController,
+              label: 'Full Name',
+              icon: Icons.person_outline,
+            ),
+            const SizedBox(height: 16),
+          ],
+          
+          _buildTextField(
+            controller: _numberController,
+            label: 'Mobile Number',
+            icon: Icons.phone_android,
+            keyboardType: TextInputType.phone,
+            prefixText: '+91 ',
+            maxLength: 10,
+          ),
+          const SizedBox(height: 16),
+          
+          _buildTextField(
+            controller: _passwordController,
+            label: 'Password',
+            icon: Icons.lock_outline,
+            obscureText: _obscurePassword,
+            suffixIcon: IconButton(
+              icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
+              onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
             ),
           ),
-        ),
+          
+          if (!isLogin) ...[
+            const SizedBox(height: 16),
+            _buildTextField(
+              controller: _confirmPasswordController,
+              label: 'Confirm Password',
+              icon: Icons.lock_outline,
+              obscureText: _obscureConfirmPassword,
+              suffixIcon: IconButton(
+                icon: Icon(_obscureConfirmPassword ? Icons.visibility_off : Icons.visibility, color: Colors.grey),
+                onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+              ),
+            ),
+          ],
+          
+          const SizedBox(height: 32),
+          
+          ElevatedButton(
+            onPressed: _isLoading ? null : _submit,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF4F46E5),
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 18),
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            ),
+            child: _isLoading 
+                ? const SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 3),
+                  )
+                : Text(
+                    isLogin ? 'Login' : 'Register', 
+                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)
+                  ),
+          ),
+        ],
       ),
     );
   }
@@ -245,21 +267,26 @@ class _AuthScreenState extends State<AuthScreen> {
     bool obscureText = false,
     TextInputType? keyboardType,
     String? prefixText,
+    int? maxLength,
+    Widget? suffixIcon,
   }) {
     return TextField(
       controller: controller,
       obscureText: obscureText,
       keyboardType: keyboardType,
+      maxLength: maxLength,
       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
       decoration: InputDecoration(
         labelText: label,
         labelStyle: TextStyle(color: Colors.grey[600]),
         prefixIcon: Icon(icon, color: const Color(0xFF4F46E5)),
+        suffixIcon: suffixIcon,
         prefixText: prefixText,
         prefixStyle: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16),
         filled: true,
         fillColor: Colors.grey[50],
         contentPadding: const EdgeInsets.symmetric(vertical: 20),
+        counterText: '', // Hide max length counter
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey[300]!, width: 1.5),

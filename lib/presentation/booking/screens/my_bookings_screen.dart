@@ -11,7 +11,7 @@ final myBookingsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) asyn
 
   final response = await supabase
       .from('bookings')
-      .select('*, cars(brand, model, images), users!bookings_shop_id_fkey(shop_name, mobile_number)')
+      .select('*, cars:cars(brand, model, images), shop:users!bookings_shop_id_fkey(shop_name, mobile_number, full_name)')
       .eq('customer_id', user.id)
       .order('created_at', ascending: false);
       
@@ -72,15 +72,15 @@ class MyBookingsScreen extends ConsumerWidget {
               itemCount: bookings.length,
               itemBuilder: (context, index) {
                 final booking = bookings[index];
-                final car = booking['cars'];
-                final shop = booking['users'];
-                final status = booking['status'];
+                final car = booking['cars'] ?? {};
+                final shop = booking['shop'] ?? {};
+                final status = booking['status'] ?? 'UNKNOWN';
                 
                 Color statusColor;
-                if (status == 'APPROVED') statusColor = Colors.green;
-                else if (status == 'REJECTED') statusColor = Colors.red;
-                else if (status == 'COMPLETED') statusColor = Colors.grey;
-                else statusColor = Colors.orange;
+                if (status == 'APPROVED') { statusColor = Colors.green; }
+                else if (status == 'REJECTED') { statusColor = Colors.red; }
+                else if (status == 'COMPLETED') { statusColor = Colors.grey; }
+                else { statusColor = Colors.orange; }
 
                 return Card(
                   elevation: 2,

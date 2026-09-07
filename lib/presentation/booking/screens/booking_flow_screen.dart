@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:go_router/go_router.dart';
 
 class BookingFlowScreen extends StatefulWidget {
   final Map<String, dynamic> car;
@@ -138,7 +139,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                 ),
                 onPressed: () {
                   Navigator.of(ctx).pop(); // Close dialog
-                  Navigator.of(context).pop(); // Go back to Home
+                  context.go('/bookings'); // Go to My Bookings
                 },
                 child: const Text('Back to Home', style: TextStyle(color: Colors.white)),
               ),
