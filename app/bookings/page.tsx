@@ -25,7 +25,7 @@ export default async function BookingsPage() {
     .select(`
       *,
       cars(brand, model, price_per_day),
-      customer:users!bookings_customer_id_fkey(email, shop_name, mobile_number)
+      customer:users!bookings_customer_id_fkey(email, shop_name, full_name, mobile_number)
     `);
     
   if (role === 'SHOP_ADMIN') {
@@ -75,7 +75,7 @@ export default async function BookingsPage() {
                       </td>
                       <td className="px-6 py-4 text-gray-600">
                         <div className="font-medium text-gray-900">
-                          {booking.customer?.shop_name || 'No Name'}
+                          {booking.customer?.full_name || booking.customer?.shop_name || 'No Name'}
                         </div>
                         <div className="text-sm">
                           {booking.customer?.mobile_number || booking.customer?.email.replace('@drivenow.app', '')}
