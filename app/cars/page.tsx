@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
-export default async function CarsPage() {
+export default async function CarsPage({ searchParams }: { searchParams?: { error?: string } }) {
   const supabase = await createClient();
   
   const { data: { user } } = await supabase.auth.getUser();
@@ -36,6 +36,13 @@ export default async function CarsPage() {
           Add New Car
         </Link>
       </header>
+
+      {searchParams?.error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mx-8 mt-6">
+          <strong className="font-bold">Error!</strong>
+          <span className="block sm:inline"> {searchParams.error}</span>
+        </div>
+      )}
 
       <div className="p-8">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -111,13 +118,18 @@ export default async function CarsPage() {
                           <form action={async () => {
                             'use server';
                             const sb = await createClient();
-                            await sb.from('cars').delete().eq('id', car.id);
+                            const { error } = await sb.from('cars').delete().eq('id', car.id);
+                            
+                            if (error) {
+                              const { redirect } = await import('next/navigation');
+                              redirect(`/cars?error=Cannot delete car. It has active bookings.`);
+                            }
                             
                             // Revalidate path using dynamic import to avoid module issues if not at top level
                             const { revalidatePath } = await import('next/cache');
                             revalidatePath('/cars');
                           }}>
-                            <button title="Delete" className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors">
+                            <button type="submit" title="Delete" className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors">
                               <Trash2 size={18} />
                             </button>
                           </form>
