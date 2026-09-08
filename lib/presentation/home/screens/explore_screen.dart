@@ -108,8 +108,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     
                     return Marker(
                       point: LatLng(lat ?? defaultLat, lng ?? defaultLng),
-                      width: 90, // Smaller
-                      height: 80,
+                      width: 120, // Wider to accommodate the card
+                      height: 100,
                       child: GestureDetector(
                         onTap: () {
                           // Scroll to car in list or open booking flow
@@ -123,41 +123,23 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         child: Column(
                           children: [
                             Container(
-                              width: 80,
-                              padding: const EdgeInsets.all(2),
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
                               decoration: BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(8),
                                 boxShadow: [
-                                  BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 4, offset: const Offset(0, 2))
+                                  BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2))
                                 ],
                               ),
-                              child: Column(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(6),
-                                    child: Container(
-                                      height: 30,
-                                      width: double.infinity,
-                                      color: Colors.grey[200],
-                                      child: (car['images'] != null && (car['images'] as List).isNotEmpty)
-                                          ? Image.network(car['images'][0], fit: BoxFit.cover)
-                                          : const Icon(Icons.directions_car, color: Colors.grey, size: 20),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    '₹${car['price_per_day']}',
-                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10, color: Color(0xFF4F46E5)),
-                                  ),
-                                ],
+                              child: Text(
+                                '₹${car['price_per_day']}/day',
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF4F46E5)),
                               ),
                             ),
                             const Icon(
-                              Icons.arrow_drop_down,
-                              color: Colors.white,
-                              size: 20,
-                              shadows: [Shadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
+                              Icons.location_on,
+                              color: Color(0xFF4F46E5),
+                              size: 40,
                             ),
                           ],
                         ),
