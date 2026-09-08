@@ -45,5 +45,26 @@ export default function RealtimeBookings() {
     };
   }, [router]);
 
-  return null; // This component doesn't render anything visible
+  return (
+    <div className="bg-indigo-50 border-b border-indigo-100 px-8 py-2 flex items-center justify-between text-sm text-indigo-700">
+      <div className="flex items-center gap-2">
+        <span className="relative flex h-3 w-3">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-indigo-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-3 w-3 bg-indigo-500"></span>
+        </span>
+        Listening for new bookings...
+      </div>
+      <button 
+        onClick={() => {
+          if (audioRef.current) {
+            audioRef.current.play().catch(console.error);
+            alert("Notification sounds enabled!");
+          }
+        }}
+        className="text-indigo-600 hover:text-indigo-800 font-medium underline"
+      >
+        Enable Notification Sound
+      </button>
+    </div>
+  );
 }
