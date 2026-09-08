@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../presentation/auth/screens/splash_screen.dart';
 import '../../presentation/auth/screens/auth_screen.dart';
 import '../../presentation/home/screens/home_screen.dart';
+import '../../presentation/home/screens/explore_screen.dart';
 import '../../presentation/booking/screens/my_bookings_screen.dart';
 import '../../presentation/profile/screens/profile_screen.dart';
 
@@ -33,7 +34,7 @@ final goRouter = GoRouter(
         ),
         GoRoute(
           path: '/explore',
-          builder: (context, state) => const PlaceholderScreen(title: 'Explore / Map'),
+          builder: (context, state) => const ExploreScreen(),
         ),
         GoRoute(
           path: '/bookings',

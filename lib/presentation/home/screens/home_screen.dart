@@ -224,25 +224,12 @@ class HomeScreen extends ConsumerWidget {
                                           ),
                                         );
                                       } else {
-                                        final user = Supabase.instance.client.auth.currentUser;
-                                        if (user == null) {
-                                          ScaffoldMessenger.of(context).showSnackBar(
-                                            SnackBar(
-                                              content: const Text('Please login or register to book a car.'),
-                                              action: SnackBarAction(
-                                                label: 'Login',
-                                                onPressed: () => GoRouter.of(context).push('/auth'),
-                                              ),
-                                            ),
-                                          );
-                                        } else {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => BookingFlowScreen(car: car),
-                                            ),
-                                          );
-                                        }
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => BookingFlowScreen(car: car),
+                                          ),
+                                        );
                                       }
                                     },
                                     style: ElevatedButton.styleFrom(

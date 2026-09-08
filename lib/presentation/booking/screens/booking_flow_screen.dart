@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -43,54 +44,60 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
   Future<void> _pickDateTime(bool isStart) async {
     final now = DateTime.now();
     final initialDate = isStart ? now : (_startDate ?? now);
+    DateTime tempDate = initialDate;
     
-    final pickedDate = await showDatePicker(
+    await showCupertinoModalPopup(
       context: context,
-      initialDate: initialDate,
-      firstDate: now,
-      lastDate: now.add(const Duration(days: 365)),
-      builder: (context, child) => _buildTheme(child),
-    );
-
-    if (pickedDate != null) {
-      if (!mounted) return;
-      final pickedTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.fromDateTime(initialDate),
-        builder: (context, child) => _buildTheme(child),
-      );
-
-      if (pickedTime != null) {
-        final finalDateTime = DateTime(
-          pickedDate.year, pickedDate.month, pickedDate.day, 
-          pickedTime.hour, pickedTime.minute
+      builder: (BuildContext context) {
+        return Container(
+          height: 300,
+          color: Colors.white,
+          child: Column(
+            children: [
+              Container(
+                color: Colors.grey[200],
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CupertinoButton(
+                      child: const Text('Cancel', style: TextStyle(color: Colors.red)),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                    CupertinoButton(
+                      child: const Text('Done', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF4F46E5))),
+                      onPressed: () {
+                        setState(() {
+                          if (isStart) {
+                            _startDate = tempDate;
+                            if (_endDate != null && _endDate!.isBefore(_startDate!)) {
+                              _endDate = null;
+                            }
+                          } else {
+                            _endDate = tempDate;
+                          }
+                        });
+                        _calculatePrice();
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: CupertinoDatePicker(
+                  initialDateTime: initialDate,
+                  minimumDate: isStart ? now : (_startDate ?? now),
+                  maximumDate: now.add(const Duration(days: 365)),
+                  mode: CupertinoDatePickerMode.dateAndTime,
+                  onDateTimeChanged: (DateTime newDateTime) {
+                    tempDate = newDateTime;
+                  },
+                ),
+              ),
+            ],
+          ),
         );
-
-        setState(() {
-          if (isStart) {
-            _startDate = finalDateTime;
-            if (_endDate != null && _endDate!.isBefore(_startDate!)) {
-              _endDate = null; // Reset end date if it's before new start date
-            }
-          } else {
-            _endDate = finalDateTime;
-          }
-        });
-        _calculatePrice();
-      }
-    }
-  }
-
-  Widget _buildTheme(Widget? child) {
-    return Theme(
-      data: Theme.of(context).copyWith(
-        colorScheme: const ColorScheme.light(
-          primary: Color(0xFF4F46E5), // Indigo
-          onPrimary: Colors.white,
-          onSurface: Colors.black,
-        ),
-      ),
-      child: child!,
+      },
     );
   }
 
@@ -378,11 +385,18 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                       color: Colors.green[50],
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Total Estimated Price', style: TextStyle(fontWeight: FontWeight.bold)),
-                        Text('\$$_totalPrice', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green, fontSize: 20)),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text('Total Estimated Price', style: TextStyle(fontWeight: FontWeight.bold)),
+                            Text('\$$_totalPrice', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green, fontSize: 20)),
+                          ],
+                        ),
+                        const SizedBox(height: 4),
+                        const Text('Calculated day-wise (Minimum 1-day charge)', style: TextStyle(color: Colors.green, fontSize: 12, fontStyle: FontStyle.italic)),
                       ],
                     ),
                   ),
