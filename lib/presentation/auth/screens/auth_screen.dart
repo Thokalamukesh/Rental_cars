@@ -79,7 +79,13 @@ class _AuthScreenState extends State<AuthScreen> with SingleTickerProviderStateM
       
       if (isLogin) {
         await supabase.auth.signInWithPassword(email: virtualEmail, password: password);
-        if (mounted) context.go('/home');
+        if (mounted) {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go('/home');
+          }
+        }
       } else {
         final authResponse = await supabase.auth.signUp(email: virtualEmail, password: password);
         if (authResponse.user != null) {

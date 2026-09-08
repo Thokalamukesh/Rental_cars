@@ -16,12 +16,8 @@ class _SplashScreenState extends State<SplashScreen> {
     // Simulate loading/initialization time
     Future.delayed(const Duration(seconds: 2), () {
       if (mounted) {
-        final session = Supabase.instance.client.auth.currentSession;
-        if (session != null) {
-          context.go('/home'); // Logged in, go to Home
-        } else {
-          context.go('/auth'); // Not logged in, go to Auth
-        }
+        // Allow guest access, everyone goes to home
+        context.go('/home');
       }
     });
   }

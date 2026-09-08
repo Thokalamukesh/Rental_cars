@@ -30,42 +30,68 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
 
   void _calculatePrice() {
     if (_startDate != null && _endDate != null) {
-      final days = _endDate!.difference(_startDate!).inDays;
+      final hours = _endDate!.difference(_startDate!).inHours;
+      final days = (hours / 24).ceil(); // Charge for a full day if they exceed hours
       final pricePerDay = (widget.car['price_per_day'] as num).toDouble();
       setState(() {
         // Minimum 1 day charge
-        _totalPrice = (days == 0 ? 1 : days) * pricePerDay;
+        _totalPrice = (days <= 0 ? 1 : days) * pricePerDay;
       });
     }
   }
 
-  Future<void> _pickDateRange() async {
+  Future<void> _pickDateTime(bool isStart) async {
     final now = DateTime.now();
-    final picked = await showDateRangePicker(
+    final initialDate = isStart ? now : (_startDate ?? now);
+    
+    final pickedDate = await showDatePicker(
       context: context,
+      initialDate: initialDate,
       firstDate: now,
       lastDate: now.add(const Duration(days: 365)),
-      builder: (context, child) {
-        return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: Color(0xFF4F46E5), // Indigo
-              onPrimary: Colors.white,
-              onSurface: Colors.black,
-            ),
-          ),
-          child: child!,
-        );
-      },
+      builder: (context, child) => _buildTheme(child),
     );
 
-    if (picked != null) {
-      setState(() {
-        _startDate = picked.start;
-        _endDate = picked.end;
-      });
-      _calculatePrice();
+    if (pickedDate != null) {
+      if (!mounted) return;
+      final pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(initialDate),
+        builder: (context, child) => _buildTheme(child),
+      );
+
+      if (pickedTime != null) {
+        final finalDateTime = DateTime(
+          pickedDate.year, pickedDate.month, pickedDate.day, 
+          pickedTime.hour, pickedTime.minute
+        );
+
+        setState(() {
+          if (isStart) {
+            _startDate = finalDateTime;
+            if (_endDate != null && _endDate!.isBefore(_startDate!)) {
+              _endDate = null; // Reset end date if it's before new start date
+            }
+          } else {
+            _endDate = finalDateTime;
+          }
+        });
+        _calculatePrice();
+      }
     }
+  }
+
+  Widget _buildTheme(Widget? child) {
+    return Theme(
+      data: Theme.of(context).copyWith(
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFF4F46E5), // Indigo
+          onPrimary: Colors.white,
+          onSurface: Colors.black,
+        ),
+      ),
+      child: child!,
+    );
   }
 
   Future<void> _pickImage() async {
@@ -82,14 +108,18 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
   Future<void> _submitBooking() async {
     if (_startDate == null || _endDate == null || _licenseImage == null) return;
     
+    final user = supabase.auth.currentUser;
+    if (user == null) {
+      // Prompt for login without losing state
+      context.push('/auth');
+      return;
+    }
+
     setState(() {
       _isUploading = true;
     });
 
     try {
-      final user = supabase.auth.currentUser;
-      if (user == null) throw Exception("Please login to book a car.");
-
       // 1. Upload KYC Image
       final fileExt = _licenseImage!.path.split('.').last;
       final fileName = '${DateTime.now().toIso8601String()}.$fileExt';
@@ -125,7 +155,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           title: const Icon(Icons.check_circle, color: Colors.green, size: 64),
           content: const Text(
-            'Booking Request Sent!\n\nThe shop admin will review your KYC and approve your booking shortly.',
+            'Booking Request Sent!\n\nWe will contact you soon, please wait for approval.',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 16),
           ),
@@ -141,7 +171,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                   Navigator.of(ctx).pop(); // Close dialog
                   context.go('/bookings'); // Go to My Bookings
                 },
-                child: const Text('Back to Home', style: TextStyle(color: Colors.white)),
+                child: const Text('View My Bookings', style: TextStyle(color: Colors.white)),
               ),
             )
           ],
@@ -161,6 +191,10 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
     }
   }
 
+  String _formatDateTime(DateTime dt) {
+    return '${dt.toLocal().toString().split(' ')[0]} ${TimeOfDay.fromDateTime(dt).format(context)}';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -175,9 +209,9 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
         type: StepperType.horizontal,
         currentStep: _currentStep,
         onStepContinue: () {
-          if (_currentStep == 0 && _startDate == null) {
+          if (_currentStep == 0 && (_startDate == null || _endDate == null)) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Please select dates to continue')),
+              const SnackBar(content: Text('Please select both start and end times')),
             );
             return;
           }
@@ -246,7 +280,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
         steps: [
           // Step 1: Dates
           Step(
-            title: const Text('Dates'),
+            title: const Text('Time'),
             isActive: _currentStep >= 0,
             state: _currentStep > 0 ? StepState.complete : StepState.indexed,
             content: Column(
@@ -279,10 +313,10 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Text('Select Rental Period', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                const Text('Pickup Date & Time', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                 const SizedBox(height: 8),
                 InkWell(
-                  onTap: _pickDateRange,
+                  onTap: () => _pickDateTime(true),
                   child: Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -294,22 +328,48 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                       children: [
                         Row(
                           children: [
-                            const Icon(Icons.calendar_month, color: Color(0xFF4F46E5)),
+                            const Icon(Icons.access_time, color: Color(0xFF4F46E5)),
                             const SizedBox(width: 12),
                             Text(
-                              _startDate != null 
-                                ? '${_startDate!.toLocal().toString().split(' ')[0]} to ${_endDate!.toLocal().toString().split(' ')[0]}'
-                                : 'Tap to select dates',
+                              _startDate != null ? _formatDateTime(_startDate!) : 'Select Pickup',
                               style: const TextStyle(fontWeight: FontWeight.bold),
                             ),
                           ],
                         ),
-                        if (_startDate != null)
-                          const Icon(Icons.check_circle, color: Colors.green),
                       ],
                     ),
                   ),
                 ),
+                
+                const SizedBox(height: 16),
+                const Text('Drop-off Date & Time', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                const SizedBox(height: 8),
+                InkWell(
+                  onTap: () => _pickDateTime(false),
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: const Color(0xFF4F46E5), width: 2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.access_time_filled, color: Color(0xFF4F46E5)),
+                            const SizedBox(width: 12),
+                            Text(
+                              _endDate != null ? _formatDateTime(_endDate!) : 'Select Drop-off',
+                              style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                
                 if (_totalPrice > 0) ...[
                   const SizedBox(height: 24),
                   Container(
@@ -390,8 +450,13 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                 const Divider(),
                 if (_startDate != null)
                   _ReviewRow(
-                    title: 'Dates', 
-                    value: '${_startDate!.toLocal().toString().split(' ')[0]} to ${_endDate!.toLocal().toString().split(' ')[0]}'
+                    title: 'Pickup', 
+                    value: _formatDateTime(_startDate!)
+                  ),
+                if (_endDate != null)
+                  _ReviewRow(
+                    title: 'Drop-off', 
+                    value: _formatDateTime(_endDate!)
                   ),
                 const Divider(),
                 _ReviewRow(title: 'KYC Document', value: _licenseImage != null ? 'Attached ✅' : 'Missing ❌'),

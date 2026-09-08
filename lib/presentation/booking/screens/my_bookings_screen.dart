@@ -101,7 +101,7 @@ class MyBookingsScreen extends ConsumerWidget {
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                               decoration: BoxDecoration(
-                                color: statusColor.withOpacity(0.1),
+                                color: statusColor.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Text(
@@ -113,7 +113,7 @@ class MyBookingsScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          'Dates: ${DateTime.parse(booking['start_date']).toLocal().toString().split(' ')[0]} to ${DateTime.parse(booking['end_date']).toLocal().toString().split(' ')[0]}',
+                          'Pickup: ${DateTime.parse(booking['start_date']).toLocal().toString().substring(0, 16)}\nDrop-off: ${DateTime.parse(booking['end_date']).toLocal().toString().substring(0, 16)}',
                           style: TextStyle(color: Colors.grey[600]),
                         ),
                         const SizedBox(height: 4),
