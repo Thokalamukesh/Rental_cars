@@ -94,9 +94,17 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-        title: const Text(
-          'DriveNow',
-          style: TextStyle(fontWeight: FontWeight.bold),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: const Color(0xFF4F46E5),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(Icons.directions_car, color: Colors.white, size: 24),
+            ),
+          ],
         ),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
@@ -313,7 +321,7 @@ class HomeScreen extends ConsumerWidget {
                                             ),
                                           ),
                                           child: Text(
-                                            '\$${car['price_per_day']}/day',
+                                            '₹${car['price_per_day']}/day',
                                             style: TextStyle(
                                               color: isAvailable
                                                   ? Colors.green

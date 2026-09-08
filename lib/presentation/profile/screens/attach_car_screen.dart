@@ -192,7 +192,7 @@ class _AttachCarScreenState extends State<AttachCarScreen> {
                   TextFormField(
                     controller: _priceController,
                     keyboardType: TextInputType.number,
-                    decoration: const InputDecoration(labelText: 'Price Per Day (\$)', border: OutlineInputBorder(), prefixIcon: Icon(Icons.attach_money)),
+                    decoration: const InputDecoration(labelText: 'Price Per Day (₹)', border: OutlineInputBorder(), prefixIcon: Icon(Icons.attach_money)),
                     validator: (v) => v!.isEmpty ? 'Required' : null,
                   ),
                   const SizedBox(height: 16),

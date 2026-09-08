@@ -312,7 +312,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                               '${widget.car['brand']} ${widget.car['model']}',
                               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                             ),
-                            Text('\$${widget.car['price_per_day']} / day', style: TextStyle(color: Colors.grey[600])),
+                            Text('₹${widget.car['price_per_day']} / day', style: TextStyle(color: Colors.grey[600])),
                           ],
                         ),
                       )
@@ -392,7 +392,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             const Text('Total Estimated Price', style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text('\$$_totalPrice', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green, fontSize: 20)),
+                            Text('₹$_totalPrice', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green, fontSize: 20)),
                           ],
                         ),
                         const SizedBox(height: 4),
@@ -475,7 +475,7 @@ class _BookingFlowScreenState extends State<BookingFlowScreen> {
                 const Divider(),
                 _ReviewRow(title: 'KYC Document', value: _licenseImage != null ? 'Attached ✅' : 'Missing ❌'),
                 const Divider(),
-                _ReviewRow(title: 'Total Amount', value: '\$$_totalPrice', isTotal: true),
+                _ReviewRow(title: 'Total Amount', value: '₹$_totalPrice', isTotal: true),
                 
                 const SizedBox(height: 24),
                 Container(

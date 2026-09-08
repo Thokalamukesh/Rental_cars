@@ -230,7 +230,7 @@ class HostDashboardScreen extends ConsumerWidget {
                             children: [
                               _HostStat(title: 'Total Bookings', value: '${bookings.length}'),
                               _HostStat(title: 'Approved', value: '${completedBookings.length}'),
-                              _HostStat(title: 'Earnings', value: '\$$totalEarned', isMoney: true),
+                              _HostStat(title: 'Earnings', value: '₹$totalEarned', isMoney: true),
                             ],
                           ),
                         ],

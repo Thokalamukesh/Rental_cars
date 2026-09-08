@@ -139,7 +139,7 @@ class MyBookingsScreen extends ConsumerWidget {
                           style: TextStyle(color: Colors.grey[600]),
                         ),
                         const SizedBox(height: 4),
-                        Text('Total: \$${booking['total_price']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                        Text('Total: ₹${booking['total_price']}', style: const TextStyle(fontWeight: FontWeight.bold)),
                         
                         if (status == 'COMPLETED') ...[
                           const SizedBox(height: 12),
