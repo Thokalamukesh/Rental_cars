@@ -98,50 +98,40 @@ export default async function BookingsPage() {
                         </span>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        {booking.status === 'PENDING' && (
-                          <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <form action={async () => {
-                              'use server';
-                              const sb = await createClient();
-                              await sb.from('bookings').update({ status: 'APPROVED' }).eq('id', booking.id);
-                              
-                              const { revalidatePath } = await import('next/cache');
-                              revalidatePath('/bookings');
-                            }}>
-                              <button title="Approve" className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-green-200 bg-white">
-                                Approve
-                              </button>
-                            </form>
-                            <form action={async () => {
-                              'use server';
-                              const sb = await createClient();
-                              await sb.from('bookings').update({ status: 'REJECTED' }).eq('id', booking.id);
-                              
-                              const { revalidatePath } = await import('next/cache');
-                              revalidatePath('/bookings');
-                            }}>
-                              <button title="Reject" className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200 bg-white">
-                                Reject
-                              </button>
-                            </form>
-                          </div>
-                        )}
-                        {booking.status === 'APPROVED' && (
-                          <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <form action={async () => {
-                              'use server';
-                              const sb = await createClient();
-                              await sb.from('bookings').update({ status: 'COMPLETED' }).eq('id', booking.id);
-                              
-                              const { revalidatePath } = await import('next/cache');
-                              revalidatePath('/bookings');
-                            }}>
-                              <button title="Mark Completed" className="px-3 py-1 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors border border-gray-200 bg-white">
-                                Mark Completed
-                              </button>
-                            </form>
-                          </div>
-                        )}
+                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {booking.status === 'PENDING' && (
+                            <>
+                              <form action={async () => {
+                                'use server';
+                                const sb = await createClient();
+                                await sb.from('bookings').update({ status: 'APPROVED' }).eq('id', booking.id);
+                                const { revalidatePath } = await import('next/cache');
+                                revalidatePath('/bookings');
+                              }}>
+                                <button title="Approve" className="p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors border border-green-200 bg-white">
+                                  Approve
+                                </button>
+                              </form>
+                              <form action={async () => {
+                                'use server';
+                                const sb = await createClient();
+                                await sb.from('bookings').update({ status: 'REJECTED' }).eq('id', booking.id);
+                                const { revalidatePath } = await import('next/cache');
+                                revalidatePath('/bookings');
+                              }}>
+                                <button title="Reject" className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200 bg-white">
+                                  Reject
+                                </button>
+                              </form>
+                            </>
+                          )}
+                          <a 
+                            href={`/bookings/${booking.id}`} 
+                            className="px-3 py-1.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-indigo-200 bg-white inline-block text-center flex items-center justify-center"
+                          >
+                            Manage Booking
+                          </a>
+                        </div>
                       </td>
                     </tr>
                   ))
