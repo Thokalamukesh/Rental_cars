@@ -37,6 +37,25 @@ export async function addCarAction(formData: FormData) {
       imageUrl = publicUrl;
     }
 
+    const locationName = formData.get('location_name') as string;
+    let lat = 17.3850; // Default to Hyderabad if geocoding fails
+    let lng = 78.4867;
+
+    if (locationName) {
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(locationName)}&format=json&limit=1`, { 
+          headers: { 'User-Agent': 'DriveNowApp/1.0' } 
+        });
+        const data = await res.json();
+        if (data && data.length > 0) {
+          lat = parseFloat(data[0].lat);
+          lng = parseFloat(data[0].lon);
+        }
+      } catch (e) {
+        console.error("Geocoding failed", e);
+      }
+    }
+
     // Insert into database
     const { error: insertError } = await supabase.from('cars').insert({
       shop_id: user.id,
@@ -47,9 +66,10 @@ export async function addCarAction(formData: FormData) {
       seats: parseInt(formData.get('seats') as string),
       fuel_type: formData.get('fuel_type'),
       city: formData.get('city') || 'All Cities',
+      location_name: locationName,
       price_per_day: parseFloat(formData.get('price') as string),
-      latitude: parseFloat(formData.get('latitude') as string),
-      longitude: parseFloat(formData.get('longitude') as string),
+      latitude: lat,
+      longitude: lng,
       images: imageUrl ? [imageUrl] : [],
       availability_status: 'AVAILABLE'
     });
