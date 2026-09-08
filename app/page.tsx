@@ -122,7 +122,7 @@ export default async function AdminDashboard() {
                         <p className="text-sm text-gray-500">{booking.customer?.email}</p>
                       </div>
                       <div className="text-right">
-                        <p className="font-bold text-gray-800">${booking.total_price}</p>
+                        <p className="font-bold text-gray-800">₹{booking.total_price}</p>
                         <span className="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-600">{booking.status}</span>
                       </div>
                     </li>
