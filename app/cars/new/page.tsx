@@ -99,6 +99,7 @@ export default function AddCarPage() {
                 <option>Miami</option>
                 <option>All Cities</option>
               </select>
+            </div>
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">Location Name / Address</label>
               <input name="location_name" required placeholder="e.g. Gachibowli, Hyderabad" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none" />
