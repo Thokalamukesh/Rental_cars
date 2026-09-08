@@ -86,6 +86,15 @@ class ProfileScreen extends ConsumerWidget {
             child: Column(
               children: [
                 ListTile(
+                  leading: const Icon(Icons.car_rental, color: Colors.green),
+                  title: const Text('Attach Your Car (Earn Money)', style: TextStyle(fontWeight: FontWeight.bold)),
+                  trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+                  onTap: () {
+                    context.push('/attach-car');
+                  },
+                ),
+                const Divider(height: 1),
+                ListTile(
                   leading: const Icon(Icons.settings, color: Colors.grey),
                   title: const Text('Account Settings'),
                   trailing: const Icon(Icons.chevron_right, color: Colors.grey),

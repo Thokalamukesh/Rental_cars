@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
+import 'review_screen.dart';
 
 final myBookingsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final supabase = Supabase.instance.client;
@@ -139,6 +140,30 @@ class MyBookingsScreen extends ConsumerWidget {
                         ),
                         const SizedBox(height: 4),
                         Text('Total: \$${booking['total_price']}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                        
+                        if (status == 'COMPLETED') ...[
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: OutlinedButton.icon(
+                              onPressed: () {
+                                showModalBottomSheet(
+                                  context: context,
+                                  isScrollControlled: true,
+                                  backgroundColor: Colors.transparent,
+                                  builder: (context) => ReviewScreen(booking: booking),
+                                );
+                              },
+                              icon: const Icon(Icons.star_border, color: Colors.amber),
+                              label: const Text('Leave a Review', style: TextStyle(color: Colors.black87, fontWeight: FontWeight.bold)),
+                              style: OutlinedButton.styleFrom(
+                                side: const BorderSide(color: Colors.amber),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              ),
+                            ),
+                          ),
+                        ],
+                        
                         const Divider(height: 24),
                         Row(
                           children: [

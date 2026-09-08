@@ -7,6 +7,7 @@ import '../../presentation/home/screens/explore_screen.dart';
 import '../../presentation/booking/screens/my_bookings_screen.dart';
 import '../../presentation/profile/screens/profile_screen.dart';
 import '../../presentation/profile/screens/host_dashboard_screen.dart';
+import '../../presentation/profile/screens/attach_car_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
@@ -22,6 +23,10 @@ final goRouter = GoRouter(
     GoRoute(
       path: '/auth',
       builder: (context, state) => const AuthScreen(),
+    ),
+    GoRoute(
+      path: '/attach-car',
+      builder: (context, state) => const AttachCarScreen(),
     ),
     ShellRoute(
       navigatorKey: _shellNavigatorKey,

@@ -108,8 +108,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     
                     return Marker(
                       point: LatLng(lat ?? defaultLat, lng ?? defaultLng),
-                      width: 120, // Wider to accommodate the card
-                      height: 100,
+                      width: 140, // Wider to accommodate the card
+                      height: 120,
                       child: GestureDetector(
                         onTap: () {
                           // Scroll to car in list or open booking flow
@@ -123,23 +123,47 @@ class _ExploreScreenState extends State<ExploreScreen> {
                         child: Column(
                           children: [
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                              width: 120,
+                              padding: const EdgeInsets.all(4),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(12),
                                 boxShadow: [
-                                  BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2))
+                                  BoxShadow(color: Colors.black.withOpacity(0.3), blurRadius: 8, offset: const Offset(0, 4))
                                 ],
                               ),
-                              child: Text(
-                                '₹${car['price_per_day']}/day',
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF4F46E5)),
+                              child: Column(
+                                children: [
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Container(
+                                      height: 50,
+                                      width: double.infinity,
+                                      color: Colors.grey[200],
+                                      child: (car['images'] != null && (car['images'] as List).isNotEmpty)
+                                          ? Image.network(car['images'][0], fit: BoxFit.cover)
+                                          : const Icon(Icons.directions_car, color: Colors.grey),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${car['brand']} ${car['model']}',
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  Text(
+                                    '₹${car['price_per_day']}/day',
+                                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Color(0xFF4F46E5)),
+                                  ),
+                                ],
                               ),
                             ),
                             const Icon(
-                              Icons.location_on,
-                              color: Color(0xFF4F46E5),
-                              size: 40,
+                              Icons.arrow_drop_down,
+                              color: Colors.white,
+                              size: 30,
+                              shadows: [Shadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2))],
                             ),
                           ],
                         ),
