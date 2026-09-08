@@ -6,6 +6,7 @@ import '../../presentation/home/screens/home_screen.dart';
 import '../../presentation/home/screens/explore_screen.dart';
 import '../../presentation/booking/screens/my_bookings_screen.dart';
 import '../../presentation/profile/screens/profile_screen.dart';
+import '../../presentation/profile/screens/host_dashboard_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
@@ -42,7 +43,7 @@ final goRouter = GoRouter(
         ),
         GoRoute(
           path: '/host',
-          builder: (context, state) => const ProfileScreen(), // Redirecting host tab to Profile/Settings
+          builder: (context, state) => const HostDashboardScreen(),
         ),
         GoRoute(
           path: '/profile',
