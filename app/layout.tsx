@@ -3,7 +3,8 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
-import { AudioNotifier } from '@/components/AudioNotifier';
+import { Toaster } from 'react-hot-toast';
+import NotificationSoundProvider from '@/app/components/NotificationSoundProvider';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -25,8 +26,10 @@ export default async function RootLayout({
     return (
       <html lang="en">
         <body className={inter.className}>
-          <AudioNotifier />
-          {children}
+          <NotificationSoundProvider>
+            <Toaster position="top-right" />
+            {children}
+          </NotificationSoundProvider>
         </body>
       </html>
     );
@@ -44,8 +47,9 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AudioNotifier />
-        <div className="flex h-screen bg-gray-50 text-gray-900 overflow-hidden">
+        <NotificationSoundProvider>
+          <Toaster position="top-right" />
+          <div className="flex h-screen bg-gray-50 text-gray-900 overflow-hidden">
           {/* Sidebar */}
           <aside className="w-64 bg-[#1E1E24] text-white flex flex-col shrink-0">
             <div className="p-6 flex items-center gap-3">
@@ -132,6 +136,7 @@ export default async function RootLayout({
             {children}
           </main>
         </div>
+        </NotificationSoundProvider>
       </body>
     </html>
   );
