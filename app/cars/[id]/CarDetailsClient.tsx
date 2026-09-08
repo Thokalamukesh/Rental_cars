@@ -64,9 +64,9 @@ export default function CarDetailsClient({ car, bookings, totalRevenue }: { car:
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-gray-100">
-            <Stat icon={<DollarSign size={20} />} label="Total Revenue" value={`$${totalRevenue.toFixed(2)}`} />
+            <Stat icon={<DollarSign size={20} />} label="Total Revenue" value={`₹${totalRevenue.toFixed(2)}`} />
             <Stat icon={<CheckCircle size={20} />} label="Total Trips" value={completedBookings.toString()} />
-            <Stat icon={<Car size={20} />} label="Price/Day" value={`$${car.price_per_day}`} />
+            <Stat icon={<Car size={20} />} label="Price/Day" value={`₹${car.price_per_day}`} />
             <Stat icon={<Calendar size={20} />} label="Location" value={car.location_name || car.city} />
           </div>
         </div>
@@ -118,7 +118,7 @@ export default function CarDetailsClient({ car, bookings, totalRevenue }: { car:
                           {b.status}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right font-bold text-gray-800">${b.total_price}</td>
+                      <td className="px-6 py-4 text-right font-bold text-gray-800">₹{b.total_price}</td>
                     </tr>
                   ))}
                   {bookings.length === 0 && (

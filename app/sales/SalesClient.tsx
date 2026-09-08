@@ -95,10 +95,10 @@ export default function SalesClient({ initialData, role }: { initialData: any[],
                 <td className="px-6 py-4 font-medium text-gray-800">{item.car}</td>
                 <td className="px-6 py-4 text-gray-600">{item.customer}</td>
                 {role === 'SUPER_ADMIN' && <td className="px-6 py-4 text-gray-600">{item.shop}</td>}
-                <td className="px-6 py-4 text-right font-medium text-gray-800">${item.gross.toFixed(2)}</td>
-                <td className="px-6 py-4 text-right text-red-500">${item.refund.toFixed(2)}</td>
-                {role === 'SUPER_ADMIN' && <td className="px-6 py-4 text-right text-indigo-600">${item.commission.toFixed(2)}</td>}
-                <td className="px-6 py-4 text-right font-bold text-green-600">${item.payout.toFixed(2)}</td>
+                <td className="px-6 py-4 text-right font-medium text-gray-800">₹{item.gross.toFixed(2)}</td>
+                <td className="px-6 py-4 text-right text-red-500">₹{item.refund.toFixed(2)}</td>
+                {role === 'SUPER_ADMIN' && <td className="px-6 py-4 text-right text-indigo-600">₹{item.commission.toFixed(2)}</td>}
+                <td className="px-6 py-4 text-right font-bold text-green-600">₹{item.payout.toFixed(2)}</td>
               </tr>
             ))}
             {filteredData.length === 0 && (
@@ -117,7 +117,7 @@ function StatCard({ title, value, color }: { title: string, value: number, color
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
       <div className="text-gray-500 font-medium text-sm mb-2">{title}</div>
-      <div className={`text-2xl font-bold ${color}`}>${value.toFixed(2)}</div>
+      <div className={`text-2xl font-bold ${color}`}>₹{value.toFixed(2)}</div>
     </div>
   );
 }

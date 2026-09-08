@@ -82,7 +82,7 @@ export default async function BookingsPage() {
                         <div><span className="font-semibold text-gray-800">Drop:</span> {new Date(booking.end_date).toLocaleString()}</div>
                       </td>
                       <td className="px-6 py-4 font-bold text-green-600">
-                        ${booking.total_price}
+                        ₹{booking.total_price}
                       </td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-bold inline-flex items-center gap-1 ${

@@ -62,7 +62,7 @@ export default function AddCarPage() {
               <input name="year" type="number" required placeholder="2023" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Price Per Day ($)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Price Per Day (₹)</label>
               <input name="price" type="number" step="0.01" required placeholder="85.00" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none" />
             </div>
             <div>

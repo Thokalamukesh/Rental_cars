@@ -92,7 +92,7 @@ export default async function CarsPage() {
                         {car.users?.shop_name || 'Admin'}
                       </td>
                       <td className="px-6 py-4 font-bold text-gray-800">
-                        ${car.price_per_day}
+                        ₹{car.price_per_day}
                       </td>
                       <td className="px-6 py-4">
                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${

@@ -54,7 +54,7 @@ export default function OwnerRequestsClient({ initialRequests }: { initialReques
             <div className="grid grid-cols-2 text-sm text-gray-600 gap-2">
               <div><strong>Owner:</strong> {req.owner?.full_name || req.owner?.email}</div>
               <div><strong>Location:</strong> {req.location_name}</div>
-              <div><strong>Price:</strong> ${req.price_per_day}/day</div>
+              <div><strong>Price:</strong> ₹{req.price_per_day}/day</div>
               <div><strong>Transmission:</strong> {req.transmission}</div>
             </div>
 

@@ -74,23 +74,23 @@ export default function BookingDetailsClient({ booking }: { booking: any }) {
           <div className="space-y-3 max-w-sm">
             <div className="flex justify-between text-gray-600">
               <span>Base Rental Price:</span>
-              <span>${booking.total_price}</span>
+              <span>₹{booking.total_price}</span>
             </div>
             {booking.extra_charges > 0 && (
               <div className="flex justify-between text-orange-600">
                 <span>Extra Charges (Penalty):</span>
-                <span>+${booking.extra_charges}</span>
+                <span>+₹{booking.extra_charges}</span>
               </div>
             )}
             {booking.refund_amount > 0 && (
               <div className="flex justify-between text-red-600">
                 <span>Refunded Amount:</span>
-                <span>-${booking.refund_amount}</span>
+                <span>-₹{booking.refund_amount}</span>
               </div>
             )}
             <div className="flex justify-between font-bold text-gray-800 border-t pt-2 mt-2">
               <span>Net Paid (Gross):</span>
-              <span>${(Number(booking.total_price) + Number(booking.extra_charges) - Number(booking.refund_amount)).toFixed(2)}</span>
+              <span>₹{(Number(booking.total_price) + Number(booking.extra_charges) - Number(booking.refund_amount)).toFixed(2)}</span>
             </div>
           </div>
         </div>
@@ -158,7 +158,7 @@ export default function BookingDetailsClient({ booking }: { booking: any }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-1">Refund Amount ($)</label>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1">Refund Amount (₹)</label>
                   <input 
                     type="number" step="any"
                     value={refundAmount}
@@ -188,7 +188,7 @@ export default function BookingDetailsClient({ booking }: { booking: any }) {
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-1">Extra Penalty Charges ($)</label>
+                  <label className="block text-xs font-semibold text-gray-500 mb-1">Extra Penalty Charges (₹)</label>
                   <input 
                     type="number" step="any"
                     value={extraCharges}

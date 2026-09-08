@@ -82,9 +82,9 @@ export default async function AdminDashboard() {
       <div className="p-8">
         {/* Revenue Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <MetricCard title="Today's Revenue" value={`$${todayRevenue.toFixed(2)}`} trend="Daily" isPositive={true} />
-          <MetricCard title="Monthly Revenue" value={`$${monthlyRevenue.toFixed(2)}`} trend="This Month" isPositive={true} />
-          <MetricCard title="Total Revenue" value={`$${totalRevenue.toFixed(2)}`} trend="All Time" isPositive={true} />
+          <MetricCard title="Today's Revenue" value={`₹${todayRevenue.toFixed(2)}`} trend="Daily" isPositive={true} />
+          <MetricCard title="Monthly Revenue" value={`₹${monthlyRevenue.toFixed(2)}`} trend="This Month" isPositive={true} />
+          <MetricCard title="Total Revenue" value={`₹${totalRevenue.toFixed(2)}`} trend="All Time" isPositive={true} />
         </div>
 
         {/* Stats Section */}

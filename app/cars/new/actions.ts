@@ -65,7 +65,6 @@ export async function addCarAction(formData: FormData) {
       transmission: formData.get('transmission'),
       seats: parseInt(formData.get('seats') as string),
       fuel_type: formData.get('fuel_type'),
-      city: formData.get('city') || 'All Cities',
       location_name: locationName,
       price_per_day: parseFloat(formData.get('price') as string),
       latitude: lat,
@@ -76,7 +75,7 @@ export async function addCarAction(formData: FormData) {
 
     if (insertError) {
       console.error("DB Insert Error:", insertError);
-      return { error: 'Failed to save car details to database.' };
+      return { error: 'Failed to save car details to database: ' + insertError.message };
     }
 
     revalidatePath('/cars');
