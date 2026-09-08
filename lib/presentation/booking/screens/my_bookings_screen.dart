@@ -11,7 +11,7 @@ final myBookingsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) asyn
 
   final response = await supabase
       .from('bookings')
-      .select('*, cars:cars(brand, model, images), shop:users!bookings_shop_id_fkey(shop_name, mobile_number, full_name)')
+      .select('*, cars:cars(brand, model, images), shop:users!shop_id(shop_name, mobile_number, full_name)')
       .eq('customer_id', user.id)
       .order('created_at', ascending: false);
       
