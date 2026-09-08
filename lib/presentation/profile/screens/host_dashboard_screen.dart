@@ -171,6 +171,14 @@ class HostDashboardScreen extends ConsumerWidget {
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                             ),
                             child: const Text('Apply to Host', style: TextStyle(fontWeight: FontWeight.bold)),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            children: const [
+                              Icon(Icons.support_agent, color: Colors.white70, size: 16),
+                              SizedBox(width: 8),
+                              Text('Contact Us: 8341257923', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                            ],
                           )
                         ],
                       ),

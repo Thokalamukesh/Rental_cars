@@ -67,10 +67,31 @@ class MyBookingsScreen extends ConsumerWidget {
           return RefreshIndicator(
             onRefresh: () => ref.refresh(myBookingsProvider.future),
             color: const Color(0xFF4F46E5),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: bookings.length,
-              itemBuilder: (context, index) {
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey[200]!),
+                    ),
+                    child: const TextField(
+                      decoration: InputDecoration(
+                        icon: Icon(Icons.search, color: Colors.grey),
+                        hintText: 'Search by car, shop, or status...',
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                    itemCount: bookings.length,
+                    itemBuilder: (context, index) {
                 final booking = bookings[index];
                 final car = booking['cars'] ?? {};
                 final shop = booking['shop'] ?? {};
@@ -159,6 +180,9 @@ class MyBookingsScreen extends ConsumerWidget {
                   ),
                 );
               },
+                  ),
+                ),
+              ],
             ),
           );
         },

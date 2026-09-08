@@ -75,19 +75,50 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 ),
                 MarkerLayer(
                   markers: _cars.map((car) {
-                    // In a real app, cars should have lat/lng. 
-                    // We scatter them slightly around the center for demo purposes.
-                    final offsetLat = (car.hashCode % 100 - 50) / 1000.0;
-                    final offsetLng = ((car.hashCode ~/ 100) % 100 - 50) / 1000.0;
+                    final lat = car['latitude'] as double?;
+                    final lng = car['longitude'] as double?;
+                    
+                    // Fallback to offset if null
+                    final defaultLat = _initialCenter.latitude + ((car.hashCode % 100 - 50) / 1000.0);
+                    final defaultLng = _initialCenter.longitude + (((car.hashCode ~/ 100) % 100 - 50) / 1000.0);
                     
                     return Marker(
-                      point: LatLng(_initialCenter.latitude + offsetLat, _initialCenter.longitude + offsetLng),
-                      width: 40,
-                      height: 40,
-                      child: const Icon(
-                        Icons.directions_car,
-                        color: Color(0xFF4F46E5),
-                        size: 32,
+                      point: LatLng(lat ?? defaultLat, lng ?? defaultLng),
+                      width: 120, // Wider to accommodate the card
+                      height: 100,
+                      child: GestureDetector(
+                        onTap: () {
+                          // Scroll to car in list or open booking flow
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => BookingFlowScreen(car: car),
+                            ),
+                          );
+                        },
+                        child: Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2))
+                                ],
+                              ),
+                              child: Text(
+                                '₹${car['price_per_day']}/day',
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF4F46E5)),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.location_on,
+                              color: Color(0xFF4F46E5),
+                              size: 40,
+                            ),
+                          ],
+                        ),
                       ),
                     );
                   }).toList(),
@@ -102,20 +133,23 @@ class _ExploreScreenState extends State<ExploreScreen> {
             left: 16,
             right: 16,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
-                  BoxShadow(color: Colors.black.withValues(alpha: 0.1), blurRadius: 10, offset: const Offset(0, 4)),
+                  BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10, offset: const Offset(0, 4)),
                 ],
               ),
-              child: const Row(
-                children: [
-                  Icon(Icons.search, color: Colors.grey),
-                  SizedBox(width: 12),
-                  Text('Search for cars nearby...', style: TextStyle(color: Colors.grey, fontSize: 16)),
-                ],
+              child: TextField(
+                onChanged: (value) {
+                  // In a real app, this would filter the _cars list or search the API
+                },
+                decoration: const InputDecoration(
+                  icon: Icon(Icons.search, color: Colors.grey),
+                  hintText: 'Search locations in India...',
+                  border: InputBorder.none,
+                ),
               ),
             ),
           ),
