@@ -99,6 +99,13 @@ export default function AddCarPage() {
                 <option>Miami</option>
                 <option>All Cities</option>
               </select>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Latitude</label>
+              <input name="latitude" type="number" step="any" required placeholder="e.g. 17.3850" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Longitude</label>
+              <input name="longitude" type="number" step="any" required placeholder="e.g. 78.4867" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-600 outline-none" />
             </div>
           </div>
 

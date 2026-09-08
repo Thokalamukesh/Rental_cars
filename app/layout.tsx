@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/server';
+import { AudioNotifier } from '@/components/AudioNotifier';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -24,6 +25,7 @@ export default async function RootLayout({
     return (
       <html lang="en">
         <body className={inter.className}>
+          <AudioNotifier />
           {children}
         </body>
       </html>
@@ -42,6 +44,7 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <AudioNotifier />
         <div className="flex h-screen bg-gray-50 text-gray-900 overflow-hidden">
           {/* Sidebar */}
           <aside className="w-64 bg-[#1E1E24] text-white flex flex-col shrink-0">

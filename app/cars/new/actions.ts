@@ -48,6 +48,8 @@ export async function addCarAction(formData: FormData) {
       fuel_type: formData.get('fuel_type'),
       city: formData.get('city') || 'All Cities',
       price_per_day: parseFloat(formData.get('price') as string),
+      latitude: parseFloat(formData.get('latitude') as string),
+      longitude: parseFloat(formData.get('longitude') as string),
       images: imageUrl ? [imageUrl] : [],
       availability_status: 'AVAILABLE'
     });

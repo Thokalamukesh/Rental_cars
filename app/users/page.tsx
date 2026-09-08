@@ -3,16 +3,26 @@ import { PlusCircle, Search, ShieldAlert, Store, Trash2, Eye } from 'lucide-reac
 import Link from 'next/link';
 import { SubmitButton } from '@/components/SubmitButton';
 import { revalidatePath } from 'next/cache';
-import { redirect } from 'next/navigation';
 
-export default async function UsersPage() {
+export default async function UsersPage({ searchParams }: { searchParams: { q?: string, role?: string, error?: string } }) {
   const supabase = await createClient();
   
-  // Fetch users (shops and admins) from Supabase
-  const { data: users, error } = await supabase
-    .from('users')
-    .select('*')
-    .order('created_at', { ascending: false });
+  // Build query
+  let query = supabase.from('users').select('*').order('created_at', { ascending: false });
+  
+  if (searchParams.q) {
+    query = query.or(`email.ilike.%${searchParams.q}%,shop_name.ilike.%${searchParams.q}%,full_name.ilike.%${searchParams.q}%`);
+  }
+  
+  if (searchParams.role && searchParams.role !== 'All Roles') {
+    let dbRole = searchParams.role;
+    if (dbRole === 'Super Admin') dbRole = 'SUPER_ADMIN';
+    if (dbRole === 'Shop Admin') dbRole = 'SHOP_ADMIN';
+    if (dbRole === 'Customer') dbRole = 'USER';
+    query = query.eq('role', dbRole);
+  }
+
+  const { data: users } = await query;
 
   return (
     <>
@@ -24,25 +34,39 @@ export default async function UsersPage() {
         </Link>
       </header>
 
+      {searchParams.error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mx-8 mt-6">
+          <strong className="font-bold">Error!</strong>
+          <span className="block sm:inline"> {searchParams.error}</span>
+        </div>
+      )}
+
       <div className="p-8">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div className="p-6 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="relative max-w-md w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-              <input 
-                type="text" 
-                placeholder="Search shops by name or email..." 
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 outline-none"
-              />
-            </div>
-            <div className="flex gap-2">
-              <select className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600">
+            <form className="relative max-w-md w-full flex items-center gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                <input 
+                  type="text" 
+                  name="q"
+                  defaultValue={searchParams.q}
+                  placeholder="Search shops by name or email..." 
+                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-600 outline-none"
+                />
+              </div>
+              <select 
+                name="role" 
+                defaultValue={searchParams.role || 'All Roles'}
+                className="border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-white"
+              >
                 <option>All Roles</option>
                 <option>Super Admin</option>
                 <option>Shop Admin</option>
                 <option>Customer</option>
               </select>
-            </div>
+              <button type="submit" className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg text-sm font-medium">Filter</button>
+            </form>
           </div>
 
           <div className="overflow-x-auto">
@@ -99,10 +123,18 @@ export default async function UsersPage() {
                               </button>
                             </Link>
                           )}
+                          <Link href={`/users/${user.id}`} className="text-sm text-indigo-600 font-medium hover:underline flex items-center px-2">
+                            Details
+                          </Link>
                           <form action={async () => {
                             'use server';
                             const sb = await createClient();
-                            await sb.from('users').delete().eq('id', user.id);
+                            const { error } = await sb.from('users').delete().eq('id', user.id);
+                            
+                            if (error) {
+                              const { redirect } = await import('next/navigation');
+                              redirect(`/users?error=Cannot delete user. They have active cars or bookings linked to them.`);
+                            }
                             revalidatePath('/users');
                           }}>
                             <SubmitButton title="Delete User" className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200 bg-white">
