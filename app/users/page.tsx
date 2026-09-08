@@ -1,6 +1,9 @@
 import { createClient } from '@/lib/supabase/server';
-import { PlusCircle, Search, ShieldAlert, Store } from 'lucide-react';
+import { PlusCircle, Search, ShieldAlert, Store, Trash2, Eye } from 'lucide-react';
 import Link from 'next/link';
+import { SubmitButton } from '@/components/SubmitButton';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 
 export default async function UsersPage() {
   const supabase = await createClient();
@@ -14,7 +17,7 @@ export default async function UsersPage() {
   return (
     <>
       <header className="bg-white border-b px-8 py-5 flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-800">Manage Shops & Admins</h1>
+        <h1 className="text-2xl font-bold text-gray-800">Manage Shops & Users</h1>
         <Link href="/users/new" className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors shadow-lg shadow-indigo-600/30">
           <PlusCircle size={20} />
           Create Shop Login
@@ -67,7 +70,10 @@ export default async function UsersPage() {
                             <Store size={18} />
                           </div>
                         )}
-                        {user.shop_name || 'System Admin'}
+                        <div>
+                          <div>{user.shop_name || user.full_name || 'System Admin'}</div>
+                          {user.mobile_number && <div className="text-xs text-gray-500 font-normal">{user.mobile_number}</div>}
+                        </div>
                       </td>
                       <td className="px-6 py-4 text-gray-600">
                         {user.email}
@@ -85,7 +91,25 @@ export default async function UsersPage() {
                         {new Date(user.created_at).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <Link href={`/users/${user.id}`} className="text-sm text-indigo-600 font-medium hover:underline">View Details</Link>
+                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          {user.role === 'SHOP_ADMIN' && (
+                            <Link href={`/cars?shop_id=${user.id}`} title="View Shop Cars">
+                              <button className="p-2 text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors border border-indigo-200 bg-white">
+                                <Eye size={18} />
+                              </button>
+                            </Link>
+                          )}
+                          <form action={async () => {
+                            'use server';
+                            const sb = await createClient();
+                            await sb.from('users').delete().eq('id', user.id);
+                            revalidatePath('/users');
+                          }}>
+                            <SubmitButton title="Delete User" className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-red-200 bg-white">
+                              <Trash2 size={18} />
+                            </SubmitButton>
+                          </form>
+                        </div>
                       </td>
                     </tr>
                   ))
