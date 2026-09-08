@@ -14,8 +14,10 @@ class ExploreScreen extends StatefulWidget {
 
 class _ExploreScreenState extends State<ExploreScreen> {
   final supabase = Supabase.instance.client;
-  List<dynamic> _cars = [];
+  List<dynamic> _allCars = [];
+  List<dynamic> _filteredCars = [];
   bool _isLoading = true;
+  String _searchQuery = '';
 
   // Center on India/default location
   final LatLng _initialCenter = const LatLng(17.3850, 78.4867); // Hyderabad as default
@@ -35,7 +37,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
       
       if (mounted) {
         setState(() {
-          _cars = response;
+          _allCars = response;
+          _filterCars();
           _isLoading = false;
         });
       }
@@ -49,6 +52,27 @@ class _ExploreScreenState extends State<ExploreScreen> {
         );
       }
     }
+  }
+
+  void _filterCars() {
+    if (_searchQuery.isEmpty) {
+      _filteredCars = List.from(_allCars);
+    } else {
+      final query = _searchQuery.toLowerCase();
+      _filteredCars = _allCars.where((car) {
+        final loc = (car['location_name'] ?? car['city'] ?? '').toString().toLowerCase();
+        final brand = (car['brand'] ?? '').toString().toLowerCase();
+        final model = (car['model'] ?? '').toString().toLowerCase();
+        return loc.contains(query) || brand.contains(query) || model.contains(query);
+      }).toList();
+    }
+  }
+
+  void _updateSearch(String query) {
+    setState(() {
+      _searchQuery = query;
+      _filterCars();
+    });
   }
 
   @override
@@ -74,7 +98,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                   userAgentPackageName: 'com.drivenow.app',
                 ),
                 MarkerLayer(
-                  markers: _cars.map((car) {
+                  markers: _filteredCars.map((car) {
                     final lat = car['latitude'] as double?;
                     final lng = car['longitude'] as double?;
                     
@@ -142,9 +166,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                 ],
               ),
               child: TextField(
-                onChanged: (value) {
-                  // In a real app, this would filter the _cars list or search the API
-                },
+                onChanged: _updateSearch,
                 decoration: const InputDecoration(
                   icon: Icon(Icons.search, color: Colors.grey),
                   hintText: 'Search locations in India...',
@@ -196,7 +218,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            '${_cars.length} found',
+                            '${_filteredCars.length} found',
                             style: const TextStyle(color: Color(0xFF4F46E5), fontWeight: FontWeight.bold),
                           ),
                         ],
@@ -207,14 +229,14 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     Expanded(
                       child: _isLoading
                           ? const Center(child: CircularProgressIndicator(color: Color(0xFF4F46E5)))
-                          : _cars.isEmpty
+                          : _filteredCars.isEmpty
                               ? const Center(child: Text('No cars available right now.', style: TextStyle(color: Colors.grey)))
                               : ListView.builder(
                                   controller: scrollController,
                                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                                  itemCount: _cars.length,
+                                  itemCount: _filteredCars.length,
                                   itemBuilder: (context, index) {
-                                    final car = _cars[index];
+                                    final car = _filteredCars[index];
                                     final images = List<String>.from(car['images'] ?? []);
                                     final imageUrl = images.isNotEmpty ? images.first : null;
                                     

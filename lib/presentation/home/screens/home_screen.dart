@@ -19,10 +19,22 @@ class CityNotifier extends Notifier<String> {
 
 final selectedCityProvider = NotifierProvider<CityNotifier, String>(CityNotifier.new);
 
-// Provider to fetch live cars from Supabase
+// Notifier for search query
+class SearchQueryNotifier extends Notifier<String> {
+  @override
+  String build() => '';
+
+  void setQuery(String query) {
+    state = query;
+  }
+}
+
+final searchQueryProvider = NotifierProvider<SearchQueryNotifier, String>(SearchQueryNotifier.new);
+
 final carsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   final supabase = Supabase.instance.client;
   final selectedCity = ref.watch(selectedCityProvider);
+  final searchQuery = ref.watch(searchQueryProvider).toLowerCase();
   
   var query = supabase
       .from('cars')
@@ -34,7 +46,20 @@ final carsProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
   }
       
   final response = await query.order('created_at', ascending: false);
-  return List<Map<String, dynamic>>.from(response);
+  
+  var cars = List<Map<String, dynamic>>.from(response);
+  
+  // Apply local search filter
+  if (searchQuery.isNotEmpty) {
+    cars = cars.where((car) {
+      final loc = (car['location_name'] ?? car['city'] ?? '').toString().toLowerCase();
+      final brand = (car['brand'] ?? '').toString().toLowerCase();
+      final model = (car['model'] ?? '').toString().toLowerCase();
+      return loc.contains(searchQuery) || brand.contains(searchQuery) || model.contains(searchQuery);
+    }).toList();
+  }
+  
+  return cars;
 });
 
 class HomeScreen extends ConsumerWidget {
@@ -92,11 +117,33 @@ class HomeScreen extends ConsumerWidget {
           return RefreshIndicator(
             onRefresh: () => ref.refresh(carsProvider.future),
             color: const Color(0xFF4F46E5),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: cars.length,
-              itemBuilder: (context, index) {
-                final car = cars[index];
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: Colors.grey[200]!),
+                    ),
+                    child: TextField(
+                      onChanged: (value) => ref.read(searchQueryProvider.notifier).setQuery(value),
+                      decoration: const InputDecoration(
+                        icon: Icon(Icons.search, color: Colors.grey),
+                        hintText: 'Search cars or locations...',
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                    itemCount: cars.length,
+                    itemBuilder: (context, index) {
+                      final car = cars[index];
                 final images = car['images'] as List<dynamic>? ?? [];
                 final shop = car['users'] != null ? car['users']['shop_name'] : 'DriveNow';
                 final isAvailable = car['availability_status'] == 'AVAILABLE';
@@ -253,8 +300,11 @@ class HomeScreen extends ConsumerWidget {
                 );
               },
             ),
-          );
-        },
+          ),
+        ],
+      ),
+    );
+  },
         loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFF4F46E5))),
         error: (error, stack) => Center(
           child: Column(
