@@ -108,8 +108,8 @@ class _ExploreScreenState extends State<ExploreScreen> {
                     
                     return Marker(
                       point: LatLng(lat ?? defaultLat, lng ?? defaultLng),
-                      width: 120, // Wider to accommodate the card
-                      height: 100,
+                      width: 60,
+                      height: 70,
                       child: GestureDetector(
                         onTap: () {
                           // Scroll to car in list or open booking flow
@@ -120,26 +120,57 @@ class _ExploreScreenState extends State<ExploreScreen> {
                             ),
                           );
                         },
-                        child: Column(
+                        child: Stack(
+                          alignment: Alignment.topCenter,
                           children: [
+                            // Circular Car Image
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+                              width: 50,
+                              height: 50,
                               decoration: BoxDecoration(
+                                shape: BoxShape.circle,
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.white, width: 2),
                                 boxShadow: [
-                                  BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 4, offset: const Offset(0, 2))
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.2),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 3),
+                                  ),
                                 ],
                               ),
-                              child: Text(
-                                '₹${car['price_per_day']}/day',
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12, color: Color(0xFF4F46E5)),
+                              child: ClipOval(
+                                child: (car['images'] != null && (car['images'] as List).isNotEmpty)
+                                    ? Image.network(car['images'][0], fit: BoxFit.cover)
+                                    : const Icon(Icons.directions_car, color: Colors.grey, size: 24),
                               ),
                             ),
-                            const Icon(
-                              Icons.location_on,
-                              color: Color(0xFF4F46E5),
-                              size: 40,
+                            // Price Tag at the bottom
+                            Positioned(
+                              bottom: 0,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFF4F46E5),
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(color: Colors.white, width: 1.5),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      blurRadius: 4,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  '₹${car['price_per_day']}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 10,
+                                  ),
+                                ),
+                              ),
                             ),
                           ],
                         ),
